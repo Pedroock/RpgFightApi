@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using RpgFight.Models;
+using RpgFight.Dtos.User;
 
 namespace RpgFight
 {
@@ -10,7 +12,8 @@ namespace RpgFight
     {
         public AutoMapperProfiles()
         {
-            //CreateMap<x, y>();
+            CreateMap<User, GetUserDto>();
+            CreateMap<GetUserDto, User>();
         }
     }
 }
