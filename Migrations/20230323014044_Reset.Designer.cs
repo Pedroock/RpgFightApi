@@ -12,8 +12,8 @@ using RpgFight.Data;
 namespace RpgFight.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230321194901_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20230323014044_Reset")]
+    partial class Reset
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,36 @@ namespace RpgFight.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("BattleCharacterEffect", b =>
+                {
+                    b.Property<int>("BattleCharactersId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EffectsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BattleCharactersId", "EffectsId");
+
+                    b.HasIndex("EffectsId");
+
+                    b.ToTable("BattleCharacterEffect");
+                });
+
+            modelBuilder.Entity("BattleEnemyEffect", b =>
+                {
+                    b.Property<int>("BattleEnemiesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EffectsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("BattleEnemiesId", "EffectsId");
+
+                    b.HasIndex("EffectsId");
+
+                    b.ToTable("BattleEnemyEffect");
+                });
 
             modelBuilder.Entity("RpgFight.Models.Armor", b =>
                 {
@@ -50,7 +80,7 @@ namespace RpgFight.Migrations
                     b.ToTable("Armors");
                 });
 
-            modelBuilder.Entity("RpgFight.Models.Bat charactertleCharacter", b =>
+            modelBuilder.Entity("RpgFight.Models.BattleCharacter", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -242,10 +272,7 @@ namespace RpgFight.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BattleCharacterId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("BattleEnemyId")
+                    b.Property<int>("Duration")
                         .HasColumnType("int");
 
                     b.Property<int>("Intensity")
@@ -259,10 +286,6 @@ namespace RpgFight.Migrations
                         .HasColumnType("bit");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BattleCharacterId");
-
-                    b.HasIndex("BattleEnemyId");
 
                     b.ToTable("Effects");
                 });
@@ -346,6 +369,36 @@ namespace RpgFight.Migrations
                     b.HasIndex("EffectId");
 
                     b.ToTable("Weapons");
+                });
+
+            modelBuilder.Entity("BattleCharacterEffect", b =>
+                {
+                    b.HasOne("RpgFight.Models.BattleCharacter", null)
+                        .WithMany()
+                        .HasForeignKey("BattleCharactersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RpgFight.Models.Effect", null)
+                        .WithMany()
+                        .HasForeignKey("EffectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("BattleEnemyEffect", b =>
+                {
+                    b.HasOne("RpgFight.Models.BattleEnemy", null)
+                        .WithMany()
+                        .HasForeignKey("BattleEnemiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RpgFight.Models.Effect", null)
+                        .WithMany()
+                        .HasForeignKey("EffectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("RpgFight.Models.Armor", b =>
@@ -467,17 +520,6 @@ namespace RpgFight.Migrations
                     b.Navigation("Effects");
                 });
 
-            modelBuilder.Entity("RpgFight.Models.Effect", b =>
-                {
-                    b.HasOne("RpgFight.Models.BattleCharacter", null)
-                        .WithMany("Effects")
-                        .HasForeignKey("BattleCharacterId");
-
-                    b.HasOne("RpgFight.Models.BattleEnemy", null)
-                        .WithMany("Effects")
-                        .HasForeignKey("BattleEnemyId");
-                });
-
             modelBuilder.Entity("RpgFight.Models.Skill", b =>
                 {
                     b.HasOne("RpgFight.Models.Effect", "Effect")
@@ -503,14 +545,7 @@ namespace RpgFight.Migrations
 
             modelBuilder.Entity("RpgFight.Models.BattleCharacter", b =>
                 {
-                    b.Navigation("Effects");
-
                     b.Navigation("Enemies");
-                });
-
-            modelBuilder.Entity("RpgFight.Models.BattleEnemy", b =>
-                {
-                    b.Navigation("Effects");
                 });
 
             modelBuilder.Entity("RpgFight.Models.Character", b =>

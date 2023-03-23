@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace RpgFight.Controllers
 {
     [ApiController]
-    [Authorize]
+    [Authorize(Policy = "DungeonMaster")]
     [Route("api/[controller]")]
     public class TestController : ControllerBase
     {

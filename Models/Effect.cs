@@ -11,5 +11,8 @@ namespace RpgFight.Models
         public string Name { get; set; } = string.Empty;
         public int Intensity { get; set; }
         public bool Self { get; set; }
+        public int Duration { get; set; }
+        public List<BattleCharacter>? BattleCharacters { get; set; }
+        public List<BattleEnemy>? BattleEnemies { get; set; }
     }
 }

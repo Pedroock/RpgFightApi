@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using RpgFight.Models;
 using RpgFight.Dtos.User;
+using RpgFight.Dtos.Armor;
+using RpgFight.Dtos.Skill;
+using RpgFight.Dtos.Weapon;
 
 namespace RpgFight
 {
@@ -14,6 +17,7 @@ namespace RpgFight
         {
             CreateMap<User, GetUserDto>();
             CreateMap<GetUserDto, User>();
+            CreateMap<Armor, GetArmorDto>();
         }
     }
 }
