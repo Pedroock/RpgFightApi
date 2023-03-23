@@ -129,7 +129,7 @@ namespace RpgFight.Migrations
 
                     b.HasIndex("WeaponId");
 
-                    b.ToTable("BattleCharacter");
+                    b.ToTable("BattleCharacters");
                 });
 
             modelBuilder.Entity("RpgFight.Models.BattleEnemy", b =>
@@ -183,7 +183,7 @@ namespace RpgFight.Migrations
 
                     b.HasIndex("WeaponId");
 
-                    b.ToTable("BattleEnemy");
+                    b.ToTable("BattleEnemies");
                 });
 
             modelBuilder.Entity("RpgFight.Models.Character", b =>
@@ -383,6 +383,55 @@ namespace RpgFight.Migrations
                             Name = "Protection",
                             Self = true
                         });
+                });
+
+            modelBuilder.Entity("RpgFight.Models.Enemy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ArmorId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Defense")
+                        .HasColumnType("int");
+
+                    b.Property<int>("HitPoint")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Intelligence")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SkillId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Strength")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("WeaponId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArmorId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("WeaponId");
+
+                    b.ToTable("Enemies");
                 });
 
             modelBuilder.Entity("RpgFight.Models.Skill", b =>
@@ -613,6 +662,33 @@ namespace RpgFight.Migrations
                         .HasForeignKey("EffectsId");
 
                     b.Navigation("Effects");
+                });
+
+            modelBuilder.Entity("RpgFight.Models.Enemy", b =>
+                {
+                    b.HasOne("RpgFight.Models.Armor", "Armor")
+                        .WithMany()
+                        .HasForeignKey("ArmorId");
+
+                    b.HasOne("RpgFight.Models.Class", "Class")
+                        .WithMany()
+                        .HasForeignKey("ClassId");
+
+                    b.HasOne("RpgFight.Models.Skill", "Skill")
+                        .WithMany()
+                        .HasForeignKey("SkillId");
+
+                    b.HasOne("RpgFight.Models.Weapon", "Weapon")
+                        .WithMany()
+                        .HasForeignKey("WeaponId");
+
+                    b.Navigation("Armor");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("Weapon");
                 });
 
             modelBuilder.Entity("RpgFight.Models.Skill", b =>

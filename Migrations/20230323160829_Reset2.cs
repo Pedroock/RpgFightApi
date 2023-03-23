@@ -5,7 +5,7 @@
 namespace RpgFight.Migrations
 {
     /// <inheritdoc />
-    public partial class Reset : Migration
+    public partial class Reset2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -170,7 +170,48 @@ namespace RpgFight.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BattleCharacter",
+                name: "Enemies",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    HitPoint = table.Column<int>(type: "int", nullable: false),
+                    Strength = table.Column<int>(type: "int", nullable: false),
+                    Intelligence = table.Column<int>(type: "int", nullable: false),
+                    Defense = table.Column<int>(type: "int", nullable: false),
+                    ClassId = table.Column<int>(type: "int", nullable: true),
+                    WeaponId = table.Column<int>(type: "int", nullable: true),
+                    ArmorId = table.Column<int>(type: "int", nullable: true),
+                    SkillId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Enemies", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Enemies_Armors_ArmorId",
+                        column: x => x.ArmorId,
+                        principalTable: "Armors",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Enemies_Classs_ClassId",
+                        column: x => x.ClassId,
+                        principalTable: "Classs",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Enemies_Skills_SkillId",
+                        column: x => x.SkillId,
+                        principalTable: "Skills",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Enemies_Weapons_WeaponId",
+                        column: x => x.WeaponId,
+                        principalTable: "Weapons",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BattleCharacters",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -188,30 +229,30 @@ namespace RpgFight.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BattleCharacter", x => x.Id);
+                    table.PrimaryKey("PK_BattleCharacters", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BattleCharacter_Armors_ArmorId",
+                        name: "FK_BattleCharacters_Armors_ArmorId",
                         column: x => x.ArmorId,
                         principalTable: "Armors",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleCharacter_Characters_CharacterId",
+                        name: "FK_BattleCharacters_Characters_CharacterId",
                         column: x => x.CharacterId,
                         principalTable: "Characters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_BattleCharacter_Classs_ClassId",
+                        name: "FK_BattleCharacters_Classs_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Classs",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleCharacter_Skills_SkillId",
+                        name: "FK_BattleCharacters_Skills_SkillId",
                         column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleCharacter_Weapons_WeaponId",
+                        name: "FK_BattleCharacters_Weapons_WeaponId",
                         column: x => x.WeaponId,
                         principalTable: "Weapons",
                         principalColumn: "Id");
@@ -228,9 +269,9 @@ namespace RpgFight.Migrations
                 {
                     table.PrimaryKey("PK_BattleCharacterEffect", x => new { x.BattleCharactersId, x.EffectsId });
                     table.ForeignKey(
-                        name: "FK_BattleCharacterEffect_BattleCharacter_BattleCharactersId",
+                        name: "FK_BattleCharacterEffect_BattleCharacters_BattleCharactersId",
                         column: x => x.BattleCharactersId,
-                        principalTable: "BattleCharacter",
+                        principalTable: "BattleCharacters",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -242,7 +283,7 @@ namespace RpgFight.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "BattleEnemy",
+                name: "BattleEnemies",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -260,29 +301,29 @@ namespace RpgFight.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BattleEnemy", x => x.Id);
+                    table.PrimaryKey("PK_BattleEnemies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_BattleEnemy_Armors_ArmorId",
+                        name: "FK_BattleEnemies_Armors_ArmorId",
                         column: x => x.ArmorId,
                         principalTable: "Armors",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleEnemy_BattleCharacter_CharacterEnemyId",
+                        name: "FK_BattleEnemies_BattleCharacters_CharacterEnemyId",
                         column: x => x.CharacterEnemyId,
-                        principalTable: "BattleCharacter",
+                        principalTable: "BattleCharacters",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleEnemy_Classs_ClassId",
+                        name: "FK_BattleEnemies_Classs_ClassId",
                         column: x => x.ClassId,
                         principalTable: "Classs",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleEnemy_Skills_SkillId",
+                        name: "FK_BattleEnemies_Skills_SkillId",
                         column: x => x.SkillId,
                         principalTable: "Skills",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_BattleEnemy_Weapons_WeaponId",
+                        name: "FK_BattleEnemies_Weapons_WeaponId",
                         column: x => x.WeaponId,
                         principalTable: "Weapons",
                         principalColumn: "Id");
@@ -299,9 +340,9 @@ namespace RpgFight.Migrations
                 {
                     table.PrimaryKey("PK_BattleEnemyEffect", x => new { x.BattleEnemiesId, x.EffectsId });
                     table.ForeignKey(
-                        name: "FK_BattleEnemyEffect_BattleEnemy_BattleEnemiesId",
+                        name: "FK_BattleEnemyEffect_BattleEnemies_BattleEnemiesId",
                         column: x => x.BattleEnemiesId,
-                        principalTable: "BattleEnemy",
+                        principalTable: "BattleEnemies",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -318,59 +359,59 @@ namespace RpgFight.Migrations
                 column: "EffectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleCharacter_ArmorId",
-                table: "BattleCharacter",
-                column: "ArmorId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BattleCharacter_CharacterId",
-                table: "BattleCharacter",
-                column: "CharacterId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BattleCharacter_ClassId",
-                table: "BattleCharacter",
-                column: "ClassId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BattleCharacter_SkillId",
-                table: "BattleCharacter",
-                column: "SkillId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_BattleCharacter_WeaponId",
-                table: "BattleCharacter",
-                column: "WeaponId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_BattleCharacterEffect_EffectsId",
                 table: "BattleCharacterEffect",
                 column: "EffectsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleEnemy_ArmorId",
-                table: "BattleEnemy",
+                name: "IX_BattleCharacters_ArmorId",
+                table: "BattleCharacters",
                 column: "ArmorId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleEnemy_CharacterEnemyId",
-                table: "BattleEnemy",
-                column: "CharacterEnemyId");
+                name: "IX_BattleCharacters_CharacterId",
+                table: "BattleCharacters",
+                column: "CharacterId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleEnemy_ClassId",
-                table: "BattleEnemy",
+                name: "IX_BattleCharacters_ClassId",
+                table: "BattleCharacters",
                 column: "ClassId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleEnemy_SkillId",
-                table: "BattleEnemy",
+                name: "IX_BattleCharacters_SkillId",
+                table: "BattleCharacters",
                 column: "SkillId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BattleEnemy_WeaponId",
-                table: "BattleEnemy",
+                name: "IX_BattleCharacters_WeaponId",
+                table: "BattleCharacters",
+                column: "WeaponId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleEnemies_ArmorId",
+                table: "BattleEnemies",
+                column: "ArmorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleEnemies_CharacterEnemyId",
+                table: "BattleEnemies",
+                column: "CharacterEnemyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleEnemies_ClassId",
+                table: "BattleEnemies",
+                column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleEnemies_SkillId",
+                table: "BattleEnemies",
+                column: "SkillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BattleEnemies_WeaponId",
+                table: "BattleEnemies",
                 column: "WeaponId");
 
             migrationBuilder.CreateIndex(
@@ -409,6 +450,26 @@ namespace RpgFight.Migrations
                 column: "EffectsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Enemies_ArmorId",
+                table: "Enemies",
+                column: "ArmorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enemies_ClassId",
+                table: "Enemies",
+                column: "ClassId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enemies_SkillId",
+                table: "Enemies",
+                column: "SkillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Enemies_WeaponId",
+                table: "Enemies",
+                column: "WeaponId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Skills_EffectId",
                 table: "Skills",
                 column: "EffectId");
@@ -429,10 +490,13 @@ namespace RpgFight.Migrations
                 name: "BattleEnemyEffect");
 
             migrationBuilder.DropTable(
-                name: "BattleEnemy");
+                name: "Enemies");
 
             migrationBuilder.DropTable(
-                name: "BattleCharacter");
+                name: "BattleEnemies");
+
+            migrationBuilder.DropTable(
+                name: "BattleCharacters");
 
             migrationBuilder.DropTable(
                 name: "Characters");

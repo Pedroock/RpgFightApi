@@ -29,12 +29,15 @@ namespace RpgFight.Data
                 new Effect {Id = 12, Name = "Protection", Intensity = 15, Self = true, Duration = -1}
             );
         }
-        public DbSet<User> Users => Set<User>();
+        public DbSet<Armor> Armors => Set<Armor>();
+        public DbSet<BattleCharacter> BattleCharacters => Set<BattleCharacter>();
+        public DbSet<BattleEnemy> BattleEnemies => Set<BattleEnemy>();
         public DbSet<Character> Characters => Set<Character>();
         public DbSet<Class> Classs => Set<Class>();
         public DbSet<Effect> Effects => Set<Effect>();
-        public DbSet<Armor> Armors => Set<Armor>();
-        public DbSet<Weapon> Weapons => Set<Weapon>();
+        public DbSet<Enemy> Enemies => Set<Enemy>();
         public DbSet<Skill> Skills => Set<Skill>();
+        public DbSet<User> Users => Set<User>();
+        public DbSet<Weapon> Weapons => Set<Weapon>();
     }
 }
