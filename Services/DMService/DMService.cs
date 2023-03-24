@@ -9,6 +9,9 @@ using RpgFight.Dtos.Skill;
 using RpgFight.Dtos.Weapon;
 using RpgFight.Models;
 using AutoMapper;
+using RpgFight.Dtos.Character;
+using RpgFight.Dtos.Class;
+using RpgFight.Dtos.Effect;
 
 namespace RpgFight.Services.DMService
 {
@@ -21,67 +24,65 @@ namespace RpgFight.Services.DMService
             _context = context;
             _mapper = mapper;
         }
-        public async Task<ServiceResponse<GetArmorDto>> AddArmor(AddArmorDto request)
+
+        public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
-            var response = new ServiceResponse<GetArmorDto>();
-            var effect = await _context.Effects.FirstOrDefaultAsync(e => e.Id == request.EffectId);
-            if(effect is null)
-            {
-                response.Success = false;
-                response.Message = "Selected effected was not found";
-                return response;
-            }
-            var armor = new Armor
-            {
-                Name = request.Name,
-                // Effect = effect,             consertar efeitos NAO ESQUCEEEE
-                Price = request.Price,
-            };
-            _context.Armors.Add(armor);
-            await _context.SaveChangesAsync();
-            response.Data = _mapper.Map<GetArmorDto>(armor);
-            response.Message = $"The  {armor.Name}  has been created";
+            var response = new ServiceResponse<List<GetCharacterDto>>();
+            var characters = await _context.Characters
+                .ToListAsync();
+            response.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
+            response.Message = "This is a list of all characters";
             return response;
         }
 
-        public Task<ServiceResponse<GetSkillDto>> AddSkill(AddSkillDto request)
+        public async Task<ServiceResponse<List<GetClassDto>>> GetAllClasses()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<List<GetClassDto>>();
+            var classes = await _context.Classs
+                .ToListAsync();
+            response.Data = classes.Select(c => _mapper.Map<GetClassDto>(c)).ToList();
+            response.Message = "This is a list of all class";
+            return response;
         }
 
-        public Task<ServiceResponse<GetWeaponDto>> AddWeapon(AddWeaponDto request)
+        public async Task<ServiceResponse<List<GetWeaponDto>>> GetAllWeapons()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<List<GetWeaponDto>>();
+            var weapons = await _context.Weapons
+                .ToListAsync();
+            response.Data = weapons.Select(w => _mapper.Map<GetWeaponDto>(w)).ToList();
+            response.Message = "This is a list of all weapons";
+            return response;
         }
 
-        public Task<ServiceResponse<List<GetArmorDto>>> DeleteArmor(int id)
+        public async Task<ServiceResponse<List<GetSkillDto>>> GetAllSkills()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<List<GetSkillDto>>();
+            var skills = await _context.Skills
+                .ToListAsync();
+            response.Data = skills.Select(s => _mapper.Map<GetSkillDto>(s)).ToList();
+            response.Message = "This is a list of all weapons";
+            return response;
         }
 
-        public Task<ServiceResponse<List<GetSkillDto>>> DeleteSkill(int id)
+        public async Task<ServiceResponse<List<GetArmorDto>>> GetAllArmors()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<List<GetArmorDto>>();
+            var armors = await _context.Armors
+                .ToListAsync();
+            response.Data = armors.Select(a => _mapper.Map<GetArmorDto>(a)).ToList();
+            response.Message = "This is a list of all armors";
+            return response;
         }
 
-        public Task<ServiceResponse<List<GetWeaponDto>>> DeleteWeapon(int id)
+        public async Task<ServiceResponse<List<GetEffectDto>>> GetAllEffects()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceResponse<List<GetArmorDto>>> GetAllArmors()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceResponse<List<GetSkillDto>>> GetAllSkills()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<ServiceResponse<List<GetWeaponDto>>> GetAllWeapons()
-        {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<List<GetEffectDto>>();
+            var effects = await _context.Effects
+                .ToListAsync();
+            response.Data = effects.Select(e => _mapper.Map<GetEffectDto>(e)).ToList();
+            response.Message = "This is a list of all effects";
+            return response;
         }
     }
 }

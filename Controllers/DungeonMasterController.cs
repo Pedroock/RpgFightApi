@@ -8,12 +8,15 @@ using RpgFight.Models;
 using RpgFight.Dtos.Armor;
 using RpgFight.Dtos.Skill;
 using RpgFight.Dtos.Weapon;
+using RpgFight.Dtos.Character;
+using RpgFight.Dtos.Effect;
+using RpgFight.Dtos.Class;
 using RpgFight.Services.DMService;
 
 namespace RpgFight.Controllers
 {
     [ApiController]
-    [Authorize(Policy = "DungeonMaster")]
+    //[Authorize(Policy = "DungeonMaster")]
     [Route("api/[controller]")]
     public class DungeonMasterController : ControllerBase
     {
@@ -22,10 +25,41 @@ namespace RpgFight.Controllers
         {
             _dmService = dmService;
         }
-        [HttpPost("Add Armor")]
-        public async Task<ActionResult<ServiceResponse<GetArmorDto>>> AddArmor(AddArmorDto request)
+
+        [HttpGet("Get All Characters")]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> GetAllCharacters()
         {
-            return Ok(await _dmService.AddArmor(request));
+            return Ok(await _dmService.GetAllCharacters());
+        }
+
+        [HttpGet("Get All Classes")]
+        public async Task<ActionResult<ServiceResponse<List<GetClassDto>>>> GetAllClasses()
+        {
+            return Ok(await _dmService.GetAllClasses());
+        }
+        
+        [HttpGet("Get All Weapons")]
+        public async Task<ActionResult<ServiceResponse<List<GetWeaponDto>>>> GetAllWeapons()
+        {
+            return Ok(await _dmService.GetAllWeapons());
+        }
+        
+        [HttpGet("Get All Skills")]
+        public async Task<ActionResult<ServiceResponse<List<GetSkillDto>>>> GetAllSkills()
+        {
+            return Ok(await _dmService.GetAllSkills());
+        }
+        
+        [HttpGet("Get All Armors")]
+        public async Task<ActionResult<ServiceResponse<List<GetArmorDto>>>> GetAllArmors()
+        {
+            return Ok(await _dmService.GetAllArmors());
+        }
+        
+        [HttpGet("Get All Effects")]
+        public async Task<ActionResult<ServiceResponse<List<GetEffectDto>>>> GetAllEffects()
+        {
+            return Ok(await _dmService.GetAllEffects());
         }
     }
 }
