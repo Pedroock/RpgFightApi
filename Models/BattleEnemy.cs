@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using RpgFight.Models.Joins;
 
 namespace RpgFight.Models
 {
@@ -17,7 +18,7 @@ namespace RpgFight.Models
         public Weapon? Weapon {get;set;}
         public Armor? Armor {get;set;}
         public Skill? Skill { get; set; }
-        public List<Effect>? Effects {get;set;}
+        public List<BattleEnemyEffect>? BattleEnemyEffects {get;set;}
         public BattleCharacter? CharacterEnemy {get;set;} 
     }
 }

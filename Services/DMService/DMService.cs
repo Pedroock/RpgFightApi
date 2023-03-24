@@ -34,7 +34,7 @@ namespace RpgFight.Services.DMService
             var armor = new Armor
             {
                 Name = request.Name,
-                Effect = effect,
+                // Effect = effect,             consertar efeitos NAO ESQUCEEEE
                 Price = request.Price,
             };
             _context.Armors.Add(armor);
