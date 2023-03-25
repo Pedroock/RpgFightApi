@@ -8,6 +8,7 @@ using RpgFight.Dtos.Armor;
 using RpgFight.Dtos.Skill;
 using RpgFight.Dtos.Weapon;
 using RpgFight.Models;
+using RpgFight.Models.Joins;
 using AutoMapper;
 using RpgFight.Dtos.Character;
 using RpgFight.Dtos.Class;
@@ -38,9 +39,23 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetClassDto>>> GetAllClasses()
         {
             var response = new ServiceResponse<List<GetClassDto>>();
-            var classes = await _context.Classs
-                .ToListAsync();
-            response.Data = classes.Select(c => _mapper.Map<GetClassDto>(c)).ToList();
+            var classes = await _context.Classs.ToListAsync();
+            List<GetClassDto> classDtoList = new List<GetClassDto>();
+            foreach(Class c in classes)
+            {
+                var classDto = _mapper.Map<GetClassDto>(c)!;
+                var classEffects = _context.ClassEffects.Where(ce => ce.ClassId == c.Id).ToList();
+                List<GetEffectDto> fxList = new List<GetEffectDto>();
+                foreach(ClassEffect ce in classEffects)
+                {
+                    fxList.Add(_mapper.Map<GetEffectDto>(
+                        await _context.Effects.FirstOrDefaultAsync(e => e.Id == ce.EffectId)
+                    ));
+                }
+                classDto.Effects = fxList;
+                classDtoList.Add(classDto);
+            }
+            response.Data = classDtoList;
             response.Message = "This is a list of all class";
             return response;
         }
