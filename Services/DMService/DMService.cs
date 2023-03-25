@@ -29,8 +29,7 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
-            var characters = await _context.Characters
-                .ToListAsync();
+            var characters = await _context.Characters.ToListAsync();
             response.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             response.Message = "This is a list of all characters";
             return response;
@@ -56,16 +55,30 @@ namespace RpgFight.Services.DMService
                 classDtoList.Add(classDto);
             }
             response.Data = classDtoList;
-            response.Message = "This is a list of all class";
+            response.Message = "This is a list of all classes";
             return response;
         }
 
         public async Task<ServiceResponse<List<GetWeaponDto>>> GetAllWeapons()
         {
             var response = new ServiceResponse<List<GetWeaponDto>>();
-            var weapons = await _context.Weapons
-                .ToListAsync();
-            response.Data = weapons.Select(w => _mapper.Map<GetWeaponDto>(w)).ToList();
+            var weapons = await _context.Weapons.ToListAsync();
+            List<GetWeaponDto> weaponDtoList = new List<GetWeaponDto>();
+            foreach(Weapon weapon in weapons)
+            {
+                var weaponDto = _mapper.Map<GetWeaponDto>(weapon);
+                var weaponEffects = _context.WeaponEffects.Where(we => we.WeaponId == weapon.Id);
+                List<GetEffectDto> fxList = new List<GetEffectDto>();
+                foreach(WeaponEffect we in weaponEffects)
+                {
+                    fxList.Add(_mapper.Map<GetEffectDto>(
+                        await _context.Effects.FirstOrDefaultAsync(e => e.Id == we.EffectId)
+                    ));
+                }
+                weaponDto.Effects = fxList;
+                weaponDtoList.Add(weaponDto);
+            }
+            response.Data = weaponDtoList;
             response.Message = "This is a list of all weapons";
             return response;
         }
@@ -73,9 +86,23 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetSkillDto>>> GetAllSkills()
         {
             var response = new ServiceResponse<List<GetSkillDto>>();
-            var skills = await _context.Skills
-                .ToListAsync();
-            response.Data = skills.Select(s => _mapper.Map<GetSkillDto>(s)).ToList();
+            var skills = await _context.Skills.ToListAsync();
+            List<GetSkillDto> skillDtoList = new List<GetSkillDto>(); 
+            foreach(Skill skill in skills)
+            {
+                var skillDto = _mapper.Map<GetSkillDto>(skill);
+                var skillEffects = _context.SkillEffects.Where(se => se.SkillId == skill.Id);
+                List<GetEffectDto> fxList = new List<GetEffectDto>();
+                foreach(SkillEffect se in skillEffects)
+                {
+                    fxList.Add(_mapper.Map<GetEffectDto>(
+                        await _context.Effects.FirstOrDefaultAsync(e => e.Id == se.EffectId)
+                    ));
+                }
+                skillDto.Effects = fxList;
+                skillDtoList.Add(skillDto);
+            }
+            response.Data = skillDtoList;
             response.Message = "This is a list of all weapons";
             return response;
         }
@@ -83,9 +110,23 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetArmorDto>>> GetAllArmors()
         {
             var response = new ServiceResponse<List<GetArmorDto>>();
-            var armors = await _context.Armors
-                .ToListAsync();
-            response.Data = armors.Select(a => _mapper.Map<GetArmorDto>(a)).ToList();
+            var armors = await _context.Armors.ToListAsync();
+            List<GetArmorDto> armorDtoList = new List<GetArmorDto>();
+            foreach(Armor armor in armors)
+            {
+                var armorDto = _mapper.Map<GetArmorDto>(armor);
+                var armorEffects = _context.ArmorEffects.Where(ae => ae.ArmorId == armor.Id);
+                List<GetEffectDto> fxList = new List<GetEffectDto>();
+                foreach(ArmorEffect ae in armorEffects)
+                {
+                    fxList.Add(_mapper.Map<GetEffectDto>(
+                        await _context.Effects.FirstOrDefaultAsync(e => e.Id == ae.EffectId)
+                    ));
+                }
+                armorDto.Effects = fxList;
+                armorDtoList.Add(armorDto);
+            }
+            response.Data = armorDtoList;
             response.Message = "This is a list of all armors";
             return response;
         }
@@ -93,8 +134,7 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetEffectDto>>> GetAllEffects()
         {
             var response = new ServiceResponse<List<GetEffectDto>>();
-            var effects = await _context.Effects
-                .ToListAsync();
+            var effects = await _context.Effects.ToListAsync();
             response.Data = effects.Select(e => _mapper.Map<GetEffectDto>(e)).ToList();
             response.Message = "This is a list of all effects";
             return response;
