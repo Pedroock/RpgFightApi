@@ -13,6 +13,7 @@ using AutoMapper;
 using RpgFight.Dtos.Character;
 using RpgFight.Dtos.Class;
 using RpgFight.Dtos.Effect;
+using RpgFight.Services.EffectService;
 
 namespace RpgFight.Services.DMService
 {
@@ -20,10 +21,12 @@ namespace RpgFight.Services.DMService
     {
         private readonly DataContext _context;
         private readonly IMapper _mapper;
-        public DMService(DataContext context, IMapper mapper)
+        private readonly IEffectService _fxService;
+        public DMService(DataContext context, IMapper mapper, IEffectService fxService)
         {   
             _context = context;
             _mapper = mapper;
+            _fxService = fxService;
         }
         // GetAll
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
@@ -143,21 +146,27 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<GetWeaponDto>();
             var weapon = await _context.Weapons.FirstOrDefaultAsync(c => c.Id == id);
-            response.Data = _mapper.Map<GetWeaponDto>(weapon);
+            var weaponDto = _mapper.Map<GetWeaponDto>(weapon);
+            weaponDto.Effects = await _fxService.GetWeaponFxById(weapon!.Id);
+            response.Data = weaponDto;
             return response; 
         }
         public async Task<ServiceResponse<GetSkillDto>> GetSkillById(int id)
         {
             var response = new ServiceResponse<GetSkillDto>();
             var skill = await _context.Skills.FirstOrDefaultAsync(c => c.Id == id);
-            response.Data = _mapper.Map<GetSkillDto>(skill);
+            var skillDto = _mapper.Map<GetSkillDto>(skill);
+            skillDto.Effects = await _fxService.GetSkillFxById(skill!.Id);
+            response.Data = skillDto;
             return response; 
         }
         public async Task<ServiceResponse<GetArmorDto>> GetArmorById(int id)
         {
             var response = new ServiceResponse<GetArmorDto>();
             var armor = await _context.Armors.FirstOrDefaultAsync(c => c.Id == id);
-            response.Data = _mapper.Map<GetArmorDto>(armor);
+            var armorDto = _mapper.Map<GetArmorDto>(armor);
+            armorDto.Effects = await _fxService.GetArmorFxById(armor!.Id);
+            response.Data = armorDto;
             return response; 
         }
         public async Task<ServiceResponse<GetEffectDto>> GetEffectById(int id)

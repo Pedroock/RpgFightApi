@@ -4378,11 +4378,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Projetos\\c#_aula\\RpgFight2\\RpgFight.csproj",
+      "projectUniqueName": "E:\\Projetos\\c#_aula\\RpgFight\\RpgFight.csproj",
       "projectName": "RpgFight",
-      "projectPath": "E:\\Projetos\\c#_aula\\RpgFight2\\RpgFight.csproj",
+      "projectPath": "E:\\Projetos\\c#_aula\\RpgFight\\RpgFight.csproj",
       "packagesPath": "C:\\Users\\pedro\\.nuget\\packages\\",
-      "outputPath": "E:\\Projetos\\c#_aula\\RpgFight2\\obj\\",
+      "outputPath": "E:\\Projetos\\c#_aula\\RpgFight\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\pedro\\AppData\\Roaming\\NuGet\\NuGet.Config"
