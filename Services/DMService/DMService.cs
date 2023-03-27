@@ -136,7 +136,7 @@ namespace RpgFight.Services.DMService
             var response = new ServiceResponse<List<GetEffectDto>>();
             var effects = await _context.Effects.ToListAsync();
             response.Data = effects.Select(e => _mapper.Map<GetEffectDto>(e)).ToList();
-            response.Message = "This is a list of all effects";
+            response.Message = "This is a list of all effects. If 'self=true', the effect is dealt on you, otherwise it will be dealt upon your enemy";
             return response;
         }
     }

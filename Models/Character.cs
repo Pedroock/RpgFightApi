@@ -13,6 +13,7 @@ namespace RpgFight.Models
         public int Strength {get;set;}
         public int Intelligence {get;set;}
         public int Defense {get;set;}
+        public int Level {get;set;}
         public int Money { get; set; }
         public User? User {get;set;}
         public Class? Class {get;set;}

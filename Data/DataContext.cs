@@ -87,24 +87,64 @@ namespace RpgFight.Data
                 new Effect {Id = 1, Name = "Flames", Intensity = 10, Self = false, Duration = 3},
                 new Effect {Id = 2, Name = "Ice", Intensity = 10, Self = false, Duration = 3},
                 new Effect {Id = 3, Name = "Sparks", Intensity = 10, Self = false, Duration = 3},
-                new Effect {Id = 4, Name = "Heal", Intensity = 25, Self = true, Duration = 1},
-                new Effect {Id = 5, Name = "Frenzy", Intensity = 15, Self = false, Duration = 5},
-                new Effect {Id = 6, Name = "Lethargy", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 7, Name = "Wisdom", Intensity = 15, Self = false, Duration = 5},
-                new Effect {Id = 8, Name = "Folly", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 9, Name = "Endurance", Intensity = 15, Self = false, Duration = 5},
-                new Effect {Id = 10, Name = "Weakness", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 11, Name = "Riposite", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 12, Name = "Protection I", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 13, Name = "Protection II", Intensity = 20, Self = true, Duration = -1},
-                new Effect {Id = 14, Name = "Protection III", Intensity = 30, Self = true, Duration = -1}
+                new Effect {Id = 4, Name = "Heal I", Intensity = 10, Self = true, Duration = 1},
+                new Effect {Id = 5, Name = "Heal II", Intensity = 20, Self = true, Duration = 1},
+                new Effect {Id = 6, Name = "Heal III", Intensity = 30, Self = true, Duration = 1},
+                new Effect {Id = 7, Name = "Frenzy", Intensity = 15, Self = true, Duration = -1},
+                new Effect {Id = 8, Name = "Lethargy", Intensity = -15, Self = false, Duration = 5},
+                new Effect {Id = 9, Name = "Wisdom", Intensity = 15, Self = true, Duration = -1},
+                new Effect {Id = 10, Name = "Folly", Intensity = -15, Self = false, Duration = 5},
+                new Effect {Id = 11, Name = "Endurance", Intensity = 15, Self = true, Duration = -1},
+                new Effect {Id = 12, Name = "Weakness", Intensity = -15, Self = false, Duration = 5},
+                new Effect {Id = 13, Name = "Riposite", Intensity = 10, Self = true, Duration = -1},
+                new Effect {Id = 14, Name = "Protection I", Intensity = 10, Self = true, Duration = -1},
+                new Effect {Id = 15, Name = "Protection II", Intensity = 20, Self = true, Duration = -1},
+                new Effect {Id = 16, Name = "Protection III", Intensity = 30, Self = true, Duration = -1}
             );
 
             modelBuilder.Entity<Class>().HasData(
-                new Class {Id = 1}
+                new Class {Id = 1, Name = "Knight"},
+                new Class {Id = 2, Name = "Crusader"},
+                new Class {Id = 3, Name = "Berserker"},
+                new Class {Id = 4, Name = "Mage"},
+                new Class {Id = 5, Name = "Witch"}
             );
-            modelBuilder.Entity<ClassEffect>().HasData(
-                new ClassEffect {ClassId = 1, EffectId = 1}
+
+            modelBuilder.Entity<Armor>().HasData(
+                new Armor {Id = 1, Name = "Warrior Armor", Price = 100},
+                new Armor {Id = 2, Name = "Mage Robe", Price = 100},
+                new Armor {Id = 3, Name = "Fur Armor", Price = 100},
+                new Armor {Id = 4, Name = "Full Plate Armor", Price = 200},
+                new Armor {Id = 5, Name = "Royal Armor", Price = 200},
+                new Armor {Id = 6, Name = "Necromancer Robe", Price = 200},
+                new Armor {Id = 7, Name = "Heavenly Armor", Price = 300},
+                new Armor {Id = 8, Name = "Cursed Armor", Price = 300},
+                new Armor {Id = 9, Name = "Arch Mage Mask", Price = 300}
+            );
+
+            modelBuilder.Entity<Skill>().HasData(
+                new Skill {Id = 1, Name = "Heal I", Damage = 0, Price = 100},
+                new Skill {Id = 2, Name = "Flames", Damage = 25, Price = 100},
+                new Skill {Id = 3, Name = "Ice Spike", Damage = 25, Price = 100},
+                new Skill {Id = 4, Name = "Eletric Shock", Damage = 25, Price = 100},
+                new Skill {Id = 5, Name = "Heal II", Damage = 0, Price = 200},
+                new Skill {Id = 6, Name = "Thermal Shock", Damage = 50, Price = 200},
+                new Skill {Id = 7, Name = "Cold Storm", Damage = 50, Price = 200},
+                new Skill {Id = 8, Name = "Eletric Fire", Damage = 50, Price = 200},
+                new Skill {Id = 9, Name = "Heal III", Damage = 0, Price = 300},
+                new Skill {Id = 10, Name = "Elemental Burst", Damage = 75, Price = 300}
+            );
+
+            modelBuilder.Entity<Weapon>().HasData(
+                new Weapon {Id = 1, Name = "Clunky Longsword", Damage = 30, Price = 100},
+                new Weapon {Id = 2, Name = "Ugly Knife", Damage = 25, Price = 100},
+                new Weapon {Id = 3, Name = "Sword", Damage = 25, Price = 100},
+                new Weapon {Id = 4, Name = "Assassins Blade", Damage = 50, Price = 200},
+                new Weapon {Id = 5, Name = "Blessed Sword", Damage = 50, Price = 200},
+                new Weapon {Id = 6, Name = "Scimitar", Damage = 50, Price = 200},
+                new Weapon {Id = 7, Name = "Heavy Axe", Damage = 75, Price = 300},
+                new Weapon {Id = 8, Name = "Blessed Sword", Damage = 75, Price = 300},
+                new Weapon {Id = 9, Name = "Sword and Shield", Damage = 75, Price = 300}
             );
 
 

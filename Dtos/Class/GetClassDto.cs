@@ -9,6 +9,11 @@ namespace RpgFight.Dtos.Class
     public class GetClassDto
     {
         public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public int HitPointModifier {get;set;}
+        public int StrengthModifier {get;set;}
+        public int IntelligenceModifier {get;set;}
+        public int DefenseModifier {get;set;}
         public List<GetEffectDto>? Effects { get; set; }
     }
 }
