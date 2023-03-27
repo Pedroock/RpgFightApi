@@ -14,6 +14,5 @@ namespace RpgFight.Dtos.Class
         public int StrengthModifier {get;set;}
         public int IntelligenceModifier {get;set;}
         public int DefenseModifier {get;set;}
-        public List<GetEffectDto>? Effects { get; set; }
     }
 }

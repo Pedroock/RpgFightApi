@@ -10,7 +10,7 @@ namespace RpgFight.Dtos.Armor
     public class GetArmorDto
     {
         public string Name { get; set; } = string.Empty;
-        public List<GetEffectDto>? Effects { get; set; }
         public int Price {get;set;}
+        public List<GetEffectDto>? Effects { get; set; }
     }
 }

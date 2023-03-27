@@ -14,6 +14,5 @@ namespace RpgFight.Models
         public int StrengthModifier {get;set;}
         public int IntelligenceModifier {get;set;}
         public int DefenseModifier {get;set;}
-        public List<ClassEffect>? ClassEffects { get; set; }
     }
 }

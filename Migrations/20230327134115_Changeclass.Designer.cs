@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RpgFight.Data;
 
@@ -11,9 +12,11 @@ using RpgFight.Data;
 namespace RpgFight.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230327134115_Changeclass")]
+    partial class Changeclass
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -314,47 +317,47 @@ namespace RpgFight.Migrations
                         new
                         {
                             Id = 1,
-                            DefenseModifier = 5,
-                            HitPointModifier = 15,
-                            IntelligenceModifier = 5,
+                            DefenseModifier = 0,
+                            HitPointModifier = 0,
+                            IntelligenceModifier = 0,
                             Name = "Knight",
-                            StrengthModifier = 5
+                            StrengthModifier = 0
                         },
                         new
                         {
                             Id = 2,
-                            DefenseModifier = 10,
-                            HitPointModifier = 10,
+                            DefenseModifier = 0,
+                            HitPointModifier = 0,
                             IntelligenceModifier = 0,
                             Name = "Crusader",
-                            StrengthModifier = 10
+                            StrengthModifier = 0
                         },
                         new
                         {
                             Id = 3,
-                            DefenseModifier = -5,
-                            HitPointModifier = 10,
-                            IntelligenceModifier = -5,
+                            DefenseModifier = 0,
+                            HitPointModifier = 0,
+                            IntelligenceModifier = 0,
                             Name = "Berserker",
-                            StrengthModifier = 30
+                            StrengthModifier = 0
                         },
                         new
                         {
                             Id = 4,
                             DefenseModifier = 0,
-                            HitPointModifier = 10,
-                            IntelligenceModifier = 30,
+                            HitPointModifier = 0,
+                            IntelligenceModifier = 0,
                             Name = "Mage",
-                            StrengthModifier = -10
+                            StrengthModifier = 0
                         },
                         new
                         {
                             Id = 5,
-                            DefenseModifier = 10,
-                            HitPointModifier = 10,
-                            IntelligenceModifier = 20,
+                            DefenseModifier = 0,
+                            HitPointModifier = 0,
+                            IntelligenceModifier = 0,
                             Name = "Witch",
-                            StrengthModifier = -10
+                            StrengthModifier = 0
                         });
                 });
 
@@ -576,113 +579,6 @@ namespace RpgFight.Migrations
                     b.HasIndex("EffectId");
 
                     b.ToTable("ArmorEffects");
-
-                    b.HasData(
-                        new
-                        {
-                            ArmorId = 1,
-                            EffectId = 14
-                        },
-                        new
-                        {
-                            ArmorId = 1,
-                            EffectId = 11
-                        },
-                        new
-                        {
-                            ArmorId = 2,
-                            EffectId = 1
-                        },
-                        new
-                        {
-                            ArmorId = 2,
-                            EffectId = 14
-                        },
-                        new
-                        {
-                            ArmorId = 3,
-                            EffectId = 7
-                        },
-                        new
-                        {
-                            ArmorId = 3,
-                            EffectId = 10
-                        },
-                        new
-                        {
-                            ArmorId = 4,
-                            EffectId = 15
-                        },
-                        new
-                        {
-                            ArmorId = 4,
-                            EffectId = 11
-                        },
-                        new
-                        {
-                            ArmorId = 5,
-                            EffectId = 16
-                        },
-                        new
-                        {
-                            ArmorId = 5,
-                            EffectId = 10
-                        },
-                        new
-                        {
-                            ArmorId = 6,
-                            EffectId = 14
-                        },
-                        new
-                        {
-                            ArmorId = 6,
-                            EffectId = 9
-                        },
-                        new
-                        {
-                            ArmorId = 7,
-                            EffectId = 16
-                        },
-                        new
-                        {
-                            ArmorId = 7,
-                            EffectId = 9
-                        },
-                        new
-                        {
-                            ArmorId = 7,
-                            EffectId = 11
-                        },
-                        new
-                        {
-                            ArmorId = 8,
-                            EffectId = 14
-                        },
-                        new
-                        {
-                            ArmorId = 8,
-                            EffectId = 13
-                        },
-                        new
-                        {
-                            ArmorId = 8,
-                            EffectId = 12
-                        },
-                        new
-                        {
-                            ArmorId = 9,
-                            EffectId = 15
-                        },
-                        new
-                        {
-                            ArmorId = 9,
-                            EffectId = 13
-                        },
-                        new
-                        {
-                            ArmorId = 9,
-                            EffectId = 9
-                        });
                 });
 
             modelBuilder.Entity("RpgFight.Models.Joins.BattleEnemyEffect", b =>
@@ -700,6 +596,21 @@ namespace RpgFight.Migrations
                     b.ToTable("BattleEnemyEffects");
                 });
 
+            modelBuilder.Entity("RpgFight.Models.Joins.ClassEffect", b =>
+                {
+                    b.Property<int>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EffectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClassId", "EffectId");
+
+                    b.HasIndex("EffectId");
+
+                    b.ToTable("ClassEffects");
+                });
+
             modelBuilder.Entity("RpgFight.Models.Joins.SkillEffect", b =>
                 {
                     b.Property<int>("SkillId")
@@ -713,83 +624,6 @@ namespace RpgFight.Migrations
                     b.HasIndex("EffectId");
 
                     b.ToTable("SkillEffects");
-
-                    b.HasData(
-                        new
-                        {
-                            SkillId = 1,
-                            EffectId = 4
-                        },
-                        new
-                        {
-                            SkillId = 2,
-                            EffectId = 1
-                        },
-                        new
-                        {
-                            SkillId = 3,
-                            EffectId = 2
-                        },
-                        new
-                        {
-                            SkillId = 4,
-                            EffectId = 3
-                        },
-                        new
-                        {
-                            SkillId = 5,
-                            EffectId = 5
-                        },
-                        new
-                        {
-                            SkillId = 6,
-                            EffectId = 1
-                        },
-                        new
-                        {
-                            SkillId = 6,
-                            EffectId = 2
-                        },
-                        new
-                        {
-                            SkillId = 7,
-                            EffectId = 2
-                        },
-                        new
-                        {
-                            SkillId = 7,
-                            EffectId = 3
-                        },
-                        new
-                        {
-                            SkillId = 8,
-                            EffectId = 1
-                        },
-                        new
-                        {
-                            SkillId = 8,
-                            EffectId = 3
-                        },
-                        new
-                        {
-                            SkillId = 9,
-                            EffectId = 6
-                        },
-                        new
-                        {
-                            SkillId = 10,
-                            EffectId = 1
-                        },
-                        new
-                        {
-                            SkillId = 10,
-                            EffectId = 2
-                        },
-                        new
-                        {
-                            SkillId = 10,
-                            EffectId = 3
-                        });
                 });
 
             modelBuilder.Entity("RpgFight.Models.Joins.WeaponEffect", b =>
@@ -805,63 +639,6 @@ namespace RpgFight.Migrations
                     b.HasIndex("EffectId");
 
                     b.ToTable("WeaponEffects");
-
-                    b.HasData(
-                        new
-                        {
-                            WeaponId = 1,
-                            EffectId = 8
-                        },
-                        new
-                        {
-                            WeaponId = 2,
-                            EffectId = 10
-                        },
-                        new
-                        {
-                            WeaponId = 4,
-                            EffectId = 9
-                        },
-                        new
-                        {
-                            WeaponId = 5,
-                            EffectId = 11
-                        },
-                        new
-                        {
-                            WeaponId = 6,
-                            EffectId = 7
-                        },
-                        new
-                        {
-                            WeaponId = 7,
-                            EffectId = 8
-                        },
-                        new
-                        {
-                            WeaponId = 7,
-                            EffectId = 11
-                        },
-                        new
-                        {
-                            WeaponId = 8,
-                            EffectId = 7
-                        },
-                        new
-                        {
-                            WeaponId = 8,
-                            EffectId = 10
-                        },
-                        new
-                        {
-                            WeaponId = 9,
-                            EffectId = 13
-                        },
-                        new
-                        {
-                            WeaponId = 9,
-                            EffectId = 8
-                        });
                 });
 
             modelBuilder.Entity("RpgFight.Models.Skill", b =>
@@ -1257,6 +1034,25 @@ namespace RpgFight.Migrations
                     b.Navigation("Effect");
                 });
 
+            modelBuilder.Entity("RpgFight.Models.Joins.ClassEffect", b =>
+                {
+                    b.HasOne("RpgFight.Models.Class", "Class")
+                        .WithMany("ClassEffects")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RpgFight.Models.Effect", "Effect")
+                        .WithMany("ClassEffects")
+                        .HasForeignKey("EffectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Effect");
+                });
+
             modelBuilder.Entity("RpgFight.Models.Joins.SkillEffect", b =>
                 {
                     b.HasOne("RpgFight.Models.Effect", "Effect")
@@ -1319,6 +1115,11 @@ namespace RpgFight.Migrations
                     b.Navigation("BattlCharacter");
                 });
 
+            modelBuilder.Entity("RpgFight.Models.Class", b =>
+                {
+                    b.Navigation("ClassEffects");
+                });
+
             modelBuilder.Entity("RpgFight.Models.Effect", b =>
                 {
                     b.Navigation("ArmorEffects");
@@ -1326,6 +1127,8 @@ namespace RpgFight.Migrations
                     b.Navigation("BattleCharacterEffects");
 
                     b.Navigation("BattleEnemyEffects");
+
+                    b.Navigation("ClassEffects");
 
                     b.Navigation("SkillEffects");
 

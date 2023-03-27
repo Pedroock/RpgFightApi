@@ -25,7 +25,7 @@ namespace RpgFight.Controllers
         {
             _dmService = dmService;
         }
-
+        // GetAll
         [HttpGet("Get All Characters")]
         public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> GetAllCharacters()
         {
@@ -60,6 +60,37 @@ namespace RpgFight.Controllers
         public async Task<ActionResult<ServiceResponse<List<GetEffectDto>>>> GetAllEffects()
         {
             return Ok(await _dmService.GetAllEffects());
+        }
+        // GetById
+        [HttpGet("Get Character By Id")]
+        public async Task<ActionResult<ServiceResponse<GetCharacterDto>>> GetCharacterById(int id)
+        {
+            return Ok(await _dmService.GetCharacterById(id));
+        }
+        [HttpGet("Get Class By Id")]
+        public async Task<ActionResult<ServiceResponse<GetClassDto>>> GetClassById(int id)
+        {
+            return Ok(await _dmService.GetClassById(id));
+        }
+        [HttpGet("Get Weapon By Id")]
+        public async Task<ActionResult<ServiceResponse<GetWeaponDto>>> GetWeaponById(int id)
+        {
+            return Ok(await _dmService.GetWeaponById(id));
+        }
+        [HttpGet("Get Skill By Id")]
+        public async Task<ActionResult<ServiceResponse<GetSkillDto>>> GetSkillById(int id)
+        {
+            return Ok(await _dmService.GetSkillById(id));
+        }
+        [HttpGet("Get Armor By Id")]
+        public async Task<ActionResult<ServiceResponse<GetArmorDto>>> GetArmorById(int id)
+        {
+            return Ok(await _dmService.GetArmorById(id));
+        }
+        [HttpGet("Get Effect By Id")]
+        public async Task<ActionResult<ServiceResponse<GetEffectDto>>> GetEffectById(int id)
+        {
+            return Ok(await _dmService.GetEffectById(id));
         }
     }
 }

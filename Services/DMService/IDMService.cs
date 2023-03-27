@@ -21,5 +21,11 @@ namespace RpgFight.Services.DMService
         Task<ServiceResponse<List<GetSkillDto>>> GetAllSkills();
         Task<ServiceResponse<List<GetArmorDto>>> GetAllArmors();
         Task<ServiceResponse<List<GetEffectDto>>> GetAllEffects();
+        Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id);
+        Task<ServiceResponse<GetClassDto>> GetClassById(int id);
+        Task<ServiceResponse<GetWeaponDto>> GetWeaponById(int id);
+        Task<ServiceResponse<GetSkillDto>> GetSkillById(int id);
+        Task<ServiceResponse<GetArmorDto>> GetArmorById(int id);
+        Task<ServiceResponse<GetEffectDto>> GetEffectById(int id);
     }
 }

@@ -25,7 +25,7 @@ namespace RpgFight.Services.DMService
             _context = context;
             _mapper = mapper;
         }
-
+        // GetAll
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
@@ -39,22 +39,7 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<List<GetClassDto>>();
             var classes = await _context.Classs.ToListAsync();
-            List<GetClassDto> classDtoList = new List<GetClassDto>();
-            foreach(Class c in classes)
-            {
-                var classDto = _mapper.Map<GetClassDto>(c)!;
-                var classEffects = _context.ClassEffects.Where(ce => ce.ClassId == c.Id).ToList();
-                List<GetEffectDto> fxList = new List<GetEffectDto>();
-                foreach(ClassEffect ce in classEffects)
-                {
-                    fxList.Add(_mapper.Map<GetEffectDto>(
-                        await _context.Effects.FirstOrDefaultAsync(e => e.Id == ce.EffectId)
-                    ));
-                }
-                classDto.Effects = fxList;
-                classDtoList.Add(classDto);
-            }
-            response.Data = classDtoList;
+            response.Data = classes.Select(c => _mapper.Map<GetClassDto>(c)).ToList();
             response.Message = "This is a list of all classes";
             return response;
         }
@@ -138,6 +123,49 @@ namespace RpgFight.Services.DMService
             response.Data = effects.Select(e => _mapper.Map<GetEffectDto>(e)).ToList();
             response.Message = "This is a list of all effects. If 'self=true', the effect is dealt on you, otherwise it will be dealt upon your enemy";
             return response;
+        }
+        // GetById
+        public async Task<ServiceResponse<GetCharacterDto>> GetCharacterById(int id)
+        {
+            var response = new ServiceResponse<GetCharacterDto>();
+            var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetCharacterDto>(character);
+            return response;
+        }
+        public async Task<ServiceResponse<GetClassDto>> GetClassById(int id)
+        {
+            var response = new ServiceResponse<GetClassDto>();
+            var clas = await _context.Classs.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetClassDto>(clas);
+            return response; 
+        }
+        public async Task<ServiceResponse<GetWeaponDto>> GetWeaponById(int id)
+        {
+            var response = new ServiceResponse<GetWeaponDto>();
+            var weapon = await _context.Weapons.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetWeaponDto>(weapon);
+            return response; 
+        }
+        public async Task<ServiceResponse<GetSkillDto>> GetSkillById(int id)
+        {
+            var response = new ServiceResponse<GetSkillDto>();
+            var skill = await _context.Skills.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetSkillDto>(skill);
+            return response; 
+        }
+        public async Task<ServiceResponse<GetArmorDto>> GetArmorById(int id)
+        {
+            var response = new ServiceResponse<GetArmorDto>();
+            var armor = await _context.Armors.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetArmorDto>(armor);
+            return response; 
+        }
+        public async Task<ServiceResponse<GetEffectDto>> GetEffectById(int id)
+        {
+            var response = new ServiceResponse<GetEffectDto>();
+            var fx = await _context.Effects.FirstOrDefaultAsync(c => c.Id == id);
+            response.Data = _mapper.Map<GetEffectDto>(fx);
+            return response; 
         }
     }
 }
