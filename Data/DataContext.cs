@@ -195,6 +195,34 @@ namespace RpgFight.Data
                 new WeaponEffect {WeaponId = 9, EffectId =8}
             );
 
+            modelBuilder.Entity<Enemy>().HasData(
+                new Character 
+                {
+                    Id = 1, Name = "Tippy-toe Jack", HitPoint = 100, 
+                    Strength = 15, Intelligence = 10, Defense = 5
+                },
+                new Character 
+                {
+                    Id = 2, Name = "Blair Witch", HitPoint = 150, 
+                    Strength = 5, Intelligence = 15, Defense = 10
+                },
+                new Character 
+                {
+                    Id = 3, Name = "Holy Warrior", HitPoint = 200, 
+                    Strength = 10, Intelligence = 5, Defense = 15
+                },
+                new Character 
+                {
+                    Id = 4, Name = "Shadow Wizzard", HitPoint = 250, 
+                    Strength = 0, Intelligence = 20, Defense = 10
+                },
+                new Character 
+                {
+                    Id = 5, Name = "Ragnar", HitPoint = 300, 
+                    Strength = 20, Intelligence = 5, Defense = 5
+                }
+            );
+
 
             /* Seeds
             modelBuilder.Entity<Effect>().HasData(
