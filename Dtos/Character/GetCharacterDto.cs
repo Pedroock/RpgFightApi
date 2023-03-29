@@ -18,7 +18,6 @@ namespace RpgFight.Dtos.Character
         public int Strength {get;set;}
         public int Intelligence {get;set;}
         public int Defense {get;set;}
-        public int Money { get; set; }
         public GetClassDto? Class {get;set;}
         public GetWeaponDto? Weapon {get;set;}
         public GetArmorDto? Armor { get; set; }

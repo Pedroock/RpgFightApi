@@ -9,6 +9,7 @@ using RpgFight.Dtos.Skill;
 using RpgFight.Dtos.Character;
 using RpgFight.Dtos.Effect;
 using RpgFight.Dtos.Class;
+using RpgFight.Dtos.Enemy;
 
 
 namespace RpgFight.Services.DMService
@@ -16,6 +17,7 @@ namespace RpgFight.Services.DMService
     public interface IDMService
     {
         Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters();
+        Task<ServiceResponse<List<GetEnemyDto>>> GetAllEnemies();
         Task<ServiceResponse<List<GetClassDto>>> GetAllClasses();
         Task<ServiceResponse<List<GetWeaponDto>>> GetAllWeapons();
         Task<ServiceResponse<List<GetSkillDto>>> GetAllSkills();

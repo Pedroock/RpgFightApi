@@ -20,7 +20,6 @@ namespace RpgFight.Models
         public List<BattleCharacterEffect>? BattleCharacterEffects { get; set; }
         public Character? Character {get;set;}
         public int CharacterId { get; set; }
-        public List<BattleEnemy>? Enemies {get;set;}
 
     }
 }

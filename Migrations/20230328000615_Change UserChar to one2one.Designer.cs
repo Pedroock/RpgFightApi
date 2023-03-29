@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RpgFight.Data;
 
@@ -11,9 +12,11 @@ using RpgFight.Data;
 namespace RpgFight.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230328000615_Change UserChar to one2one")]
+    partial class ChangeUserChartoone2one
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,6 +37,9 @@ namespace RpgFight.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Armors");
@@ -42,47 +48,56 @@ namespace RpgFight.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Warrior Armor"
+                            Name = "Warrior Armor",
+                            Price = 100
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Mage Robe"
+                            Name = "Mage Robe",
+                            Price = 100
                         },
                         new
                         {
                             Id = 3,
-                            Name = "Fur Armor"
+                            Name = "Fur Armor",
+                            Price = 100
                         },
                         new
                         {
                             Id = 4,
-                            Name = "Full Plate Armor"
+                            Name = "Full Plate Armor",
+                            Price = 200
                         },
                         new
                         {
                             Id = 5,
-                            Name = "Royal Armor"
+                            Name = "Royal Armor",
+                            Price = 200
                         },
                         new
                         {
                             Id = 6,
-                            Name = "Necromancer Robe"
+                            Name = "Necromancer Robe",
+                            Price = 200
                         },
                         new
                         {
                             Id = 7,
-                            Name = "Heavenly Armor"
+                            Name = "Heavenly Armor",
+                            Price = 300
                         },
                         new
                         {
                             Id = 8,
-                            Name = "Cursed Armor"
+                            Name = "Cursed Armor",
+                            Price = 300
                         },
                         new
                         {
                             Id = 9,
-                            Name = "Arch Mage Mask"
+                            Name = "Arch Mage Mask",
+                            Price = 300
                         });
                 });
 
@@ -167,9 +182,6 @@ namespace RpgFight.Migrations
                     b.Property<int?>("ArmorId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BattleCharacterId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CharacterEnemyId")
                         .HasColumnType("int");
 
@@ -201,8 +213,6 @@ namespace RpgFight.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ArmorId");
-
-                    b.HasIndex("BattleCharacterId");
 
                     b.HasIndex("CharacterEnemyId");
 
@@ -236,6 +246,12 @@ namespace RpgFight.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Intelligence")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Money")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -555,7 +571,7 @@ namespace RpgFight.Migrations
                         {
                             Id = 1,
                             Defense = 5,
-                            HitPoint = 200,
+                            HitPoint = 100,
                             Intelligence = 10,
                             Name = "Tippy-toe Jack",
                             Strength = 15
@@ -564,7 +580,7 @@ namespace RpgFight.Migrations
                         {
                             Id = 2,
                             Defense = 10,
-                            HitPoint = 200,
+                            HitPoint = 150,
                             Intelligence = 15,
                             Name = "Blair Witch",
                             Strength = 5
@@ -582,7 +598,7 @@ namespace RpgFight.Migrations
                         {
                             Id = 4,
                             Defense = 10,
-                            HitPoint = 200,
+                            HitPoint = 250,
                             Intelligence = 20,
                             Name = "Shadow Wizzard",
                             Strength = 0
@@ -591,7 +607,7 @@ namespace RpgFight.Migrations
                         {
                             Id = 5,
                             Defense = 5,
-                            HitPoint = 200,
+                            HitPoint = 300,
                             Intelligence = 5,
                             Name = "Ragnar",
                             Strength = 20
@@ -914,6 +930,9 @@ namespace RpgFight.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Skills");
@@ -923,61 +942,71 @@ namespace RpgFight.Migrations
                         {
                             Id = 1,
                             Damage = 0,
-                            Name = "Heal I"
+                            Name = "Heal I",
+                            Price = 100
                         },
                         new
                         {
                             Id = 2,
                             Damage = 25,
-                            Name = "Flames"
+                            Name = "Flames",
+                            Price = 100
                         },
                         new
                         {
                             Id = 3,
                             Damage = 25,
-                            Name = "Ice Spike"
+                            Name = "Ice Spike",
+                            Price = 100
                         },
                         new
                         {
                             Id = 4,
                             Damage = 25,
-                            Name = "Eletric Shock"
+                            Name = "Eletric Shock",
+                            Price = 100
                         },
                         new
                         {
                             Id = 5,
                             Damage = 0,
-                            Name = "Heal II"
+                            Name = "Heal II",
+                            Price = 200
                         },
                         new
                         {
                             Id = 6,
                             Damage = 50,
-                            Name = "Thermal Shock"
+                            Name = "Thermal Shock",
+                            Price = 200
                         },
                         new
                         {
                             Id = 7,
                             Damage = 50,
-                            Name = "Cold Storm"
+                            Name = "Cold Storm",
+                            Price = 200
                         },
                         new
                         {
                             Id = 8,
                             Damage = 50,
-                            Name = "Eletric Fire"
+                            Name = "Eletric Fire",
+                            Price = 200
                         },
                         new
                         {
                             Id = 9,
                             Damage = 0,
-                            Name = "Heal III"
+                            Name = "Heal III",
+                            Price = 300
                         },
                         new
                         {
                             Id = 10,
                             Damage = 75,
-                            Name = "Elemental Burst"
+                            Name = "Elemental Burst",
+                            Price = 300
                         });
                 });
 
@@ -1021,6 +1050,9 @@ namespace RpgFight.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Price")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Weapons");
@@ -1030,55 +1062,64 @@ namespace RpgFight.Migrations
                         {
                             Id = 1,
                             Damage = 30,
-                            Name = "Clunky Longsword"
+                            Name = "Clunky Longsword",
+                            Price = 100
                         },
                         new
                         {
                             Id = 2,
                             Damage = 25,
-                            Name = "Ugly Knife"
+                            Name = "Ugly Knife",
+                            Price = 100
                         },
                         new
                         {
                             Id = 3,
                             Damage = 25,
-                            Name = "Sword"
+                            Name = "Sword",
+                            Price = 100
                         },
                         new
                         {
                             Id = 4,
                             Damage = 50,
-                            Name = "Assassins Blade"
+                            Name = "Assassins Blade",
+                            Price = 200
                         },
                         new
                         {
                             Id = 5,
                             Damage = 50,
-                            Name = "Blessed Sword"
+                            Name = "Blessed Sword",
+                            Price = 200
                         },
                         new
                         {
                             Id = 6,
                             Damage = 50,
-                            Name = "Scimitar"
+                            Name = "Scimitar",
+                            Price = 200
                         },
                         new
                         {
                             Id = 7,
                             Damage = 75,
-                            Name = "Heavy Axe"
+                            Name = "Heavy Axe",
+                            Price = 300
                         },
                         new
                         {
                             Id = 8,
                             Damage = 75,
-                            Name = "Blessed Sword"
+                            Name = "Blessed Sword",
+                            Price = 300
                         },
                         new
                         {
                             Id = 9,
                             Damage = 75,
-                            Name = "Sword and Shield"
+                            Name = "Sword and Shield",
+                            Price = 300
                         });
                 });
 
@@ -1142,12 +1183,8 @@ namespace RpgFight.Migrations
                         .WithMany()
                         .HasForeignKey("ArmorId");
 
-                    b.HasOne("RpgFight.Models.BattleCharacter", "BattleCharacter")
-                        .WithMany()
-                        .HasForeignKey("BattleCharacterId");
-
                     b.HasOne("RpgFight.Models.BattleCharacter", "CharacterEnemy")
-                        .WithMany()
+                        .WithMany("Enemies")
                         .HasForeignKey("CharacterEnemyId");
 
                     b.HasOne("RpgFight.Models.Class", "Class")
@@ -1163,8 +1200,6 @@ namespace RpgFight.Migrations
                         .HasForeignKey("WeaponId");
 
                     b.Navigation("Armor");
-
-                    b.Navigation("BattleCharacter");
 
                     b.Navigation("CharacterEnemy");
 
@@ -1323,6 +1358,8 @@ namespace RpgFight.Migrations
             modelBuilder.Entity("RpgFight.Models.BattleCharacter", b =>
                 {
                     b.Navigation("BattleCharacterEffects");
+
+                    b.Navigation("Enemies");
                 });
 
             modelBuilder.Entity("RpgFight.Models.BattleEnemy", b =>

@@ -32,6 +32,12 @@ namespace RpgFight.Controllers
             return Ok(await _dmService.GetAllCharacters());
         }
 
+        [HttpGet("Get All Enemies")]
+        public async Task<ActionResult<ServiceResponse<List<GetCharacterDto>>>> GetAllEnemies()
+        {
+            return Ok(await _dmService.GetAllEnemies());
+        }
+
         [HttpGet("Get All Classes")]
         public async Task<ActionResult<ServiceResponse<List<GetClassDto>>>> GetAllClasses()
         {

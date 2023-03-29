@@ -105,15 +105,15 @@ namespace RpgFight.Data
             );
 
             modelBuilder.Entity<Armor>().HasData(
-                new Armor {Id = 1, Name = "Warrior Armor", Price = 100},
-                new Armor {Id = 2, Name = "Mage Robe", Price = 100},
-                new Armor {Id = 3, Name = "Fur Armor", Price = 100},
-                new Armor {Id = 4, Name = "Full Plate Armor", Price = 200},
-                new Armor {Id = 5, Name = "Royal Armor", Price = 200},
-                new Armor {Id = 6, Name = "Necromancer Robe", Price = 200},
-                new Armor {Id = 7, Name = "Heavenly Armor", Price = 300},
-                new Armor {Id = 8, Name = "Cursed Armor", Price = 300},
-                new Armor {Id = 9, Name = "Arch Mage Mask", Price = 300}
+                new Armor {Id = 1, Name = "Warrior Armor"},
+                new Armor {Id = 2, Name = "Mage Robe"},
+                new Armor {Id = 3, Name = "Fur Armor"},
+                new Armor {Id = 4, Name = "Full Plate Armor"},
+                new Armor {Id = 5, Name = "Royal Armor"},
+                new Armor {Id = 6, Name = "Necromancer Robe"},
+                new Armor {Id = 7, Name = "Heavenly Armor"},
+                new Armor {Id = 8, Name = "Cursed Armor"},
+                new Armor {Id = 9, Name = "Arch Mage Mask"}
             );
             modelBuilder.Entity<ArmorEffect>().HasData(
                 new ArmorEffect {ArmorId = 1, EffectId =14},
@@ -140,16 +140,16 @@ namespace RpgFight.Data
             );
 
             modelBuilder.Entity<Skill>().HasData(
-                new Skill {Id = 1, Name = "Heal I", Damage = 0, Price = 100},
-                new Skill {Id = 2, Name = "Flames", Damage = 25, Price = 100},
-                new Skill {Id = 3, Name = "Ice Spike", Damage = 25, Price = 100},
-                new Skill {Id = 4, Name = "Eletric Shock", Damage = 25, Price = 100},
-                new Skill {Id = 5, Name = "Heal II", Damage = 0, Price = 200},
-                new Skill {Id = 6, Name = "Thermal Shock", Damage = 50, Price = 200},
-                new Skill {Id = 7, Name = "Cold Storm", Damage = 50, Price = 200},
-                new Skill {Id = 8, Name = "Eletric Fire", Damage = 50, Price = 200},
-                new Skill {Id = 9, Name = "Heal III", Damage = 0, Price = 300},
-                new Skill {Id = 10, Name = "Elemental Burst", Damage = 75, Price = 300}
+                new Skill {Id = 1, Name = "Heal I", Damage = 0},
+                new Skill {Id = 2, Name = "Flames", Damage = 25},
+                new Skill {Id = 3, Name = "Ice Spike", Damage = 25},
+                new Skill {Id = 4, Name = "Eletric Shock", Damage = 25},
+                new Skill {Id = 5, Name = "Heal II", Damage = 0},
+                new Skill {Id = 6, Name = "Thermal Shock", Damage = 50},
+                new Skill {Id = 7, Name = "Cold Storm", Damage = 50},
+                new Skill {Id = 8, Name = "Eletric Fire", Damage = 50},
+                new Skill {Id = 9, Name = "Heal III", Damage = 0},
+                new Skill {Id = 10, Name = "Elemental Burst", Damage = 75}
             );
             modelBuilder.Entity<SkillEffect>().HasData(
                 new SkillEffect {SkillId = 1, EffectId =4},
@@ -171,15 +171,15 @@ namespace RpgFight.Data
 
 
             modelBuilder.Entity<Weapon>().HasData(
-                new Weapon {Id = 1, Name = "Clunky Longsword", Damage = 30, Price = 100},
-                new Weapon {Id = 2, Name = "Ugly Knife", Damage = 25, Price = 100},
-                new Weapon {Id = 3, Name = "Sword", Damage = 25, Price = 100},
-                new Weapon {Id = 4, Name = "Assassins Blade", Damage = 50, Price = 200},
-                new Weapon {Id = 5, Name = "Blessed Sword", Damage = 50, Price = 200},
-                new Weapon {Id = 6, Name = "Scimitar", Damage = 50, Price = 200},
-                new Weapon {Id = 7, Name = "Heavy Axe", Damage = 75, Price = 300},
-                new Weapon {Id = 8, Name = "Blessed Sword", Damage = 75, Price = 300},
-                new Weapon {Id = 9, Name = "Sword and Shield", Damage = 75, Price = 300}
+                new Weapon {Id = 1, Name = "Clunky Longsword", Damage = 30},
+                new Weapon {Id = 2, Name = "Ugly Knife", Damage = 25},
+                new Weapon {Id = 3, Name = "Sword", Damage = 25},
+                new Weapon {Id = 4, Name = "Assassins Blade", Damage = 50},
+                new Weapon {Id = 5, Name = "Blessed Sword", Damage = 50},
+                new Weapon {Id = 6, Name = "Scimitar", Damage = 50},
+                new Weapon {Id = 7, Name = "Heavy Axe", Damage = 75},
+                new Weapon {Id = 8, Name = "Blessed Sword", Damage = 75},
+                new Weapon {Id = 9, Name = "Sword and Shield", Damage = 75}
             );
             modelBuilder.Entity<WeaponEffect>().HasData(
                 new WeaponEffect {WeaponId = 1, EffectId =8},
@@ -198,27 +198,27 @@ namespace RpgFight.Data
             modelBuilder.Entity<Enemy>().HasData(
                 new Character 
                 {
-                    Id = 1, Name = "Tippy-toe Jack", HitPoint = 100, 
+                    Id = 1, Name = "Tippy-toe Jack", HitPoint = 200, 
                     Strength = 15, Intelligence = 10, Defense = 5
                 },
                 new Character 
                 {
-                    Id = 2, Name = "Blair Witch", HitPoint = 150, 
+                    Id = 2, Name = "Blair Witch", HitPoint = 200, 
                     Strength = 5, Intelligence = 15, Defense = 10
                 },
                 new Character 
                 {
-                    Id = 3, Name = "Holy Warrior", HitPoint = 200, 
+                    Id = 3, Name = "Holy Warrior", HitPoint = 250, 
                     Strength = 10, Intelligence = 5, Defense = 15
                 },
                 new Character 
                 {
-                    Id = 4, Name = "Shadow Wizzard", HitPoint = 250, 
+                    Id = 4, Name = "Shadow Wizzard", HitPoint = 300, 
                     Strength = 0, Intelligence = 20, Defense = 10
                 },
                 new Character 
                 {
-                    Id = 5, Name = "Ragnar", HitPoint = 300, 
+                    Id = 5, Name = "Ragnar", HitPoint = 350, 
                     Strength = 20, Intelligence = 5, Defense = 5
                 }
             );

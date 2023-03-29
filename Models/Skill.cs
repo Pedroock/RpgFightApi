@@ -12,7 +12,6 @@ namespace RpgFight.Models
         public string Name { get; set; } = string.Empty;
         public int Damage { get; set; }
         public List<SkillEffect>? SkillEffects {get;set;}
-        public int Price { get; set; }
         public List<Character>? Characters {get;set;} 
     }
 }

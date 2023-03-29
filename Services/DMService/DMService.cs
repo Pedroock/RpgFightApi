@@ -12,8 +12,10 @@ using RpgFight.Models.Joins;
 using AutoMapper;
 using RpgFight.Dtos.Character;
 using RpgFight.Dtos.Class;
+using RpgFight.Dtos.Enemy;
 using RpgFight.Dtos.Effect;
 using RpgFight.Services.EffectService;
+using System.Security.Claims;
 
 namespace RpgFight.Services.DMService
 {
@@ -22,19 +24,35 @@ namespace RpgFight.Services.DMService
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IEffectService _fxService;
-        public DMService(DataContext context, IMapper mapper, IEffectService fxService)
+        private readonly IHttpContextAccessor _httpContext;
+        public DMService(DataContext context, IMapper mapper, IEffectService fxService, IHttpContextAccessor httpContext)
         {   
             _context = context;
             _mapper = mapper;
             _fxService = fxService;
+            _httpContext = httpContext;
         }
+        // Needed Methods
+        private int GetCurrentUserId() => int.Parse(
+            _httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        );
         // GetAll
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
-            var characters = await _context.Characters.ToListAsync();
+            var characters = await _context.Characters.Where(
+                c => c.UserId == GetCurrentUserId()).ToListAsync();
             response.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
-            response.Message = "This is a list of all characters";
+            response.Message = "This is a list of all your characters";
+            return response;
+        }
+
+        public async Task<ServiceResponse<List<GetEnemyDto>>> GetAllEnemies()
+        {
+            var response = new ServiceResponse<List<GetEnemyDto>>();
+            var enemies = await _context.Enemies.ToListAsync();
+            response.Data = enemies.Select(c => _mapper.Map<GetEnemyDto>(c)).ToList();
+            response.Message = "This is a list of all enemies";
             return response;
         }
 
