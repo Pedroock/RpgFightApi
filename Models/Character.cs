@@ -10,9 +10,9 @@ namespace RpgFight.Models
         public int Id {get;set;}
         public string Name {get;set;} = string.Empty;
         public int HitPoint {get;set;} = 250;
-        public int Strength {get;set;} = 10;
-        public int Intelligence {get;set;} = 10;
-        public int Defense {get;set;} = 10;
+        public int Strength {get;set;}
+        public int Intelligence {get;set;}
+        public int Defense {get;set;}
         public User? User {get;set;}
         public Class? Class {get;set;}
         public Weapon? Weapon {get;set;}

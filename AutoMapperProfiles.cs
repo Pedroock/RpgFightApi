@@ -23,6 +23,7 @@ namespace RpgFight
             CreateMap<GetUserDto, User>();
             CreateMap<Armor, GetArmorDto>();
             CreateMap<Character, GetCharacterDto>();
+            CreateMap<AddCharacterDto, Character>();
             CreateMap<Class, GetClassDto>();
             CreateMap<Effect, GetEffectDto>();
             CreateMap<Enemy, GetEnemyDto>();

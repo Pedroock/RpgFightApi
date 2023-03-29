@@ -16,5 +16,6 @@ namespace RpgFight.Services.WardrobeService
         Task<ServiceResponse<GetCharacterDto>> EquipSkill(int skillId);
         Task<ServiceResponse<GetCharacterDto>> EquipArmor(int armorId);
         Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(AddCharacterDto request);
+        Task<ServiceResponse<string>> DeleteCharacter();
     }
 }

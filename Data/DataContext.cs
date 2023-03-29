@@ -99,7 +99,7 @@ namespace RpgFight.Data
                 new Class {Id = 3, Name = "Berserker",
                 IntelligenceModifier= -5, StrengthModifier = 30, HitPointModifier = 10, DefenseModifier = -5},
                 new Class {Id = 4, Name = "Mage",
-                IntelligenceModifier= 30, StrengthModifier = -10, HitPointModifier = 10, DefenseModifier = 0},
+                IntelligenceModifier= 30, StrengthModifier = -5, HitPointModifier = 10, DefenseModifier = -5},
                 new Class {Id = 5, Name = "Witch",
                 IntelligenceModifier= 20, StrengthModifier = -10, HitPointModifier = 10, DefenseModifier = 10}
             );
