@@ -40,8 +40,7 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<List<GetCharacterDto>>> GetAllCharacters()
         {
             var response = new ServiceResponse<List<GetCharacterDto>>();
-            var characters = await _context.Characters.Where(
-                c => c.UserId == GetCurrentUserId()).ToListAsync();
+            var characters = await _context.Characters.ToListAsync();
             response.Data = characters.Select(c => _mapper.Map<GetCharacterDto>(c)).ToList();
             response.Message = "This is a list of all your characters";
             return response;
@@ -150,6 +149,12 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<GetCharacterDto>();
             var character = await _context.Characters.FirstOrDefaultAsync(c => c.Id == id);
+            if(character is null)
+            {
+                response.Success = false;
+                response.Message = "There is no character with this Id";
+                return response;
+            }
             response.Data = _mapper.Map<GetCharacterDto>(character);
             return response;
         }
@@ -157,6 +162,12 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<GetClassDto>();
             var clas = await _context.Classs.FirstOrDefaultAsync(c => c.Id == id);
+            if(clas is null)
+            {
+                response.Success = false;
+                response.Message = "There is no class with this Id";
+                return response;
+            }
             response.Data = _mapper.Map<GetClassDto>(clas);
             return response; 
         }
@@ -164,6 +175,12 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<GetWeaponDto>();
             var weapon = await _context.Weapons.FirstOrDefaultAsync(c => c.Id == id);
+            if(weapon is null)
+            {
+                response.Success = false;
+                response.Message = "There is no weapon with this Id";
+                return response;
+            }
             var weaponDto = _mapper.Map<GetWeaponDto>(weapon);
             weaponDto.Effects = await _fxService.GetWeaponFxById(weapon!.Id);
             response.Data = weaponDto;
@@ -172,7 +189,13 @@ namespace RpgFight.Services.DMService
         public async Task<ServiceResponse<GetSkillDto>> GetSkillById(int id)
         {
             var response = new ServiceResponse<GetSkillDto>();
-            var skill = await _context.Skills.FirstOrDefaultAsync(c => c.Id == id);
+            var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == id);
+            if(skill is null)
+            {
+                response.Success = false;
+                response.Message = "There is no skill with this Id";
+                return response;
+            }
             var skillDto = _mapper.Map<GetSkillDto>(skill);
             skillDto.Effects = await _fxService.GetSkillFxById(skill!.Id);
             response.Data = skillDto;
@@ -182,16 +205,68 @@ namespace RpgFight.Services.DMService
         {
             var response = new ServiceResponse<GetArmorDto>();
             var armor = await _context.Armors.FirstOrDefaultAsync(c => c.Id == id);
+            if(armor is null)
+            {
+                response.Success = false;
+                response.Message = "There is no armor with this Id";
+                return response;
+            }
             var armorDto = _mapper.Map<GetArmorDto>(armor);
             armorDto.Effects = await _fxService.GetArmorFxById(armor!.Id);
             response.Data = armorDto;
             return response; 
         }
-        public async Task<ServiceResponse<GetEffectDto>> GetEffectById(int id)
+        // Get Models
+        public async Task<ServiceResponse<Class>> GetClassModelById(int id)
         {
-            var response = new ServiceResponse<GetEffectDto>();
-            var fx = await _context.Effects.FirstOrDefaultAsync(c => c.Id == id);
-            response.Data = _mapper.Map<GetEffectDto>(fx);
+            var response = new ServiceResponse<Class>();
+            var cls = await _context.Classs.FirstOrDefaultAsync(c => c.Id == id);
+            if(cls is null)
+            {
+                response.Success = false;
+                response.Message = "There is no class with this Id";
+                return response;
+            }
+            response.Data = cls;
+            return response; 
+        }
+        public async Task<ServiceResponse<Weapon>> GetWeaponModelById(int id)
+        {
+            var response = new ServiceResponse<Weapon>();
+            var weapon = await _context.Weapons.FirstOrDefaultAsync(w => w.Id == id);
+            if(weapon is null)
+            {
+                response.Success = false;
+                response.Message = "There is no weapon with this Id";
+                return response;
+            }
+            response.Data = weapon;
+            return response; 
+        }
+        public async Task<ServiceResponse<Skill>> GetSkillModelById(int id)
+        {
+            var response = new ServiceResponse<Skill>();
+            var skill = await _context.Skills.FirstOrDefaultAsync(s => s.Id == id);
+            if(skill is null)
+            {
+                response.Success = false;
+                response.Message = "There is no skill with this Id";
+                return response;
+            }
+            response.Data = skill;
+            return response; 
+        }
+        public async Task<ServiceResponse<Armor>> GetArmorModelById(int id)
+        {
+            var response = new ServiceResponse<Armor>();
+            var armor = await _context.Armors.FirstOrDefaultAsync(a => a.Id == id);
+            if(armor is null)
+            {
+                response.Success = false;
+                response.Message = "There is no armor with this Id";
+                return response;
+            }
+            response.Data = armor;
             return response; 
         }
     }

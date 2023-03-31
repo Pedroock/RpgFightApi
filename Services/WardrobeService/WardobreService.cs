@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using RpgFight.Models;
 using RpgFight.Dtos.Character;
 using RpgFight.Services.EffectService;
+using RpgFight.Services.DMService;
 using AutoMapper;
 using RpgFight.Data;
 using System.Security.Claims;
@@ -19,17 +20,33 @@ namespace RpgFight.Services.WardrobeService
         private readonly IMapper _mapper;
         private readonly IEffectService _fxService;
         private readonly IHttpContextAccessor _httpContext;
-        public WardobreService(DataContext context, IMapper mapper, IEffectService fxService, IHttpContextAccessor httpContext)
+        private readonly IDMService _dmService;
+        public WardobreService(DataContext context, IMapper mapper, IEffectService fxService, IHttpContextAccessor httpContext, IDMService dmService)
         {   
             _context = context;
             _mapper = mapper;
             _fxService = fxService;
             _httpContext = httpContext;
+            _dmService = dmService;
         }
         // Needed Methods
         private int GetCurrentUserId() => int.Parse(
             _httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!
         );
+        private async Task<ServiceResponse<Character>> GetCurrentCharacter() 
+        {
+            var response = new ServiceResponse<Character>();
+            var c = await _context.Characters.FirstOrDefaultAsync(c => c.UserId == GetCurrentUserId());
+            if (c is null)
+            {
+                response.Success = false;
+                response.Message = "You have no character, create one first";
+                return response;
+            }
+            response.Message = "This is your current character";
+            response.Data = c;
+            return response;
+        }
         // Character Methods
         public async Task<ServiceResponse<GetCharacterDto>> CreateCharacter(AddCharacterDto request)
         {
@@ -51,38 +68,159 @@ namespace RpgFight.Services.WardrobeService
             return response;
         }
 
-        public Task<ServiceResponse<GetCharacterDto>> LookAtCharacter()
+        public async Task<ServiceResponse<GetCharacterDto>> LookAtCharacter()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<GetCharacterDto>();
+            var c = await _context.Characters
+                .Include(c => c.Class).Include(c => c.Armor).Include(c => c.Weapon).Include(c => c.Skill)
+                .FirstOrDefaultAsync(c => c.UserId == GetCurrentUserId());
+            if(c is null)
+            {
+                response.Success = false;
+                response.Message = "You have no character, create one first";
+                return response;
+            }
+            response.Data = _mapper.Map<GetCharacterDto>(c);
+            return response;
         }
 
-        public Task<ServiceResponse<GetCharacterDto>> EquipClass(int classId)
+        public async Task<ServiceResponse<GetCharacterDto>> EquipClass(int classId)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<GetCharacterDto>();
+            var cls = _dmService.GetClassModelById(classId);
+            if (cls.Result.Success == false)
+            {
+                response.Success = false;
+                response.Message = cls.Result.Message;
+                return response;
+            }
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            c.Data!.Class = cls.Result.Data;
+            await _context.SaveChangesAsync();
+            response.Message = $"Your new class is {cls!.Result.Data!.Name}";
+            response.Data = LookAtCharacter().Result.Data;
+            return response;
         }
 
-        public Task<ServiceResponse<GetCharacterDto>> EquipWeapon(int weaponId)
+        public async Task<ServiceResponse<GetCharacterDto>> EquipWeapon(int weaponId)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<GetCharacterDto>();
+            var weapon = _dmService.GetWeaponModelById(weaponId);
+            if (weapon.Result.Data is null)
+            {
+                response.Success = false;
+                response.Message = weapon.Result.Message;
+                return response;
+            }
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            c.Data!.Weapon = weapon.Result.Data;
+            await _context.SaveChangesAsync();
+            response.Message = $"Your new weapon is {weapon!.Result.Data!.Name}";
+            response.Data = LookAtCharacter().Result.Data;
+            return response;
+        }
+        public async Task<ServiceResponse<GetCharacterDto>> EquipArmor(int armorId)
+        {
+            var response = new ServiceResponse<GetCharacterDto>();
+            var armor = await _dmService.GetArmorModelById(armorId);
+            if(armor is null)
+            {
+                response.Success = false;
+                response.Message = armor!.Message;
+                return response;
+            }
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            c.Data!.Armor = armor.Data;
+            await _context.SaveChangesAsync();
+            response.Message = $"Your new armor is {armor!.Data!.Name}";
+            response.Data = LookAtCharacter().Result.Data;
+            return response;
         }
 
-        public Task<ServiceResponse<GetCharacterDto>> EquipSkill(int skillId)
+        public async Task<ServiceResponse<GetCharacterDto>> EquipSkill(int skillId)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<GetCharacterDto>();
+            var skill = await _dmService.GetSkillModelById(skillId);
+            if(skill is null)
+            {
+                response.Success = false;
+                response.Message = skill!.Message;
+                return response;
+            }
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            c.Data!.Skill = skill.Data;
+            await _context.SaveChangesAsync();
+            response.Message = $"Your new skill is {skill!.Data!.Name}";
+            response.Data = LookAtCharacter().Result.Data;
+            return response;
         }
 
-        public Task<ServiceResponse<GetCharacterDto>> EquipArmor(int armorId)
-        {
-            throw new NotImplementedException();
-        }
 
-        public Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(AddCharacterDto request)
+        public async Task<ServiceResponse<GetCharacterDto>> UpdateCharacter(AddCharacterDto request)
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<GetCharacterDto>();
+            if(request.Strength + request.Defense + request.Intelligence != 30 | request.Defense < 5 | request.Strength < 5 | request.Intelligence < 5)
+            {
+                response.Success = false;
+                response.Message = "The sum of your stats can't be greater than 30 and all stats must be greater than 5";
+                return response;
+            }
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            c.Data!.Name = request.Name;
+            c.Data!.Intelligence = request.Intelligence;
+            c.Data!.Strength = request.Strength;
+            c.Data!.Defense = request.Defense;
+            await _context.SaveChangesAsync();
+            response.Message = "You have updated your character";
+            response.Data = LookAtCharacter().Result.Data;
+            return response;
         }
-        public Task<ServiceResponse<string>> DeleteCharacter()
+        public async Task<ServiceResponse<string>> DeleteCharacter()
         {
-            throw new NotImplementedException();
+            var response = new ServiceResponse<string>();
+            var c = await GetCurrentCharacter();
+            if (c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c!.Message;
+                return response;
+            }
+            var name = c.Data!.Name;
+            _context.Characters.Remove(c.Data!);
+            await _context.SaveChangesAsync();
+            response.Message = "Your character has been deleted";
+            response.Data = $"{name}";
+            return response;
         }
     }
 }
