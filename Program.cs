@@ -8,6 +8,7 @@ using Microsoft.OpenApi.Models;
 using RpgFight.Services.DMService;
 using RpgFight.Services.EffectService;
 using RpgFight.Services.WardrobeService;
+using RpgFight.Services.GuildService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IDMService, DMService>();
 builder.Services.AddScoped<IEffectService, EffectService>();
 builder.Services.AddScoped<IWardrobeService, WardobreService>();
+builder.Services.AddScoped<IGuildService, GuildService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

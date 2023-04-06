@@ -27,6 +27,7 @@ namespace RpgFight
             CreateMap<Class, GetClassDto>();
             CreateMap<Effect, GetEffectDto>();
             CreateMap<Enemy, GetEnemyDto>();
+            CreateMap<AddEnemyDto, Enemy>();
             CreateMap<Skill, GetSkillDto>();
             CreateMap<Weapon, GetWeaponDto>();
         }
