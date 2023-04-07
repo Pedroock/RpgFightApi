@@ -11,6 +11,7 @@ using RpgFight.Data;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using RpgFight.Services.HttpContextService;
 
 namespace RpgFight.Services.WardrobeService
 {
@@ -19,39 +20,27 @@ namespace RpgFight.Services.WardrobeService
         private readonly DataContext _context;
         private readonly IMapper _mapper;
         private readonly IEffectService _fxService;
-        private readonly IHttpContextAccessor _httpContext;
         private readonly IDMService _dmService;
-        public WardobreService(DataContext context, IMapper mapper, IEffectService fxService, IHttpContextAccessor httpContext, IDMService dmService)
+        private readonly IHttpContextService _httpContextService;
+        public WardobreService(DataContext context, IMapper mapper, IEffectService fxService, IDMService dmService, IHttpContextService httpContextService)
         {   
             _context = context;
             _mapper = mapper;
             _fxService = fxService;
-            _httpContext = httpContext;
             _dmService = dmService;
-        }
-        // Needed Methods
-        private int GetCurrentUserId() => int.Parse(
-            _httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!
-        );
-        private async Task<ServiceResponse<Character>> GetCurrentCharacter() 
-        {
-            var response = new ServiceResponse<Character>();
-            var c = await _context.Characters.FirstOrDefaultAsync(c => c.UserId == GetCurrentUserId());
-            if (c is null)
-            {
-                response.Success = false;
-                response.Message = "You have no character, create one first";
-                return response;
-            }
-            response.Message = "This is your current character";
-            response.Data = c;
-            return response;
+            _httpContextService = httpContextService;
         }
         // Character Methods
         public async Task<ServiceResponse<GetCharacterDto>> CreateCharacter(AddCharacterDto request)
         {
             var response = new ServiceResponse<GetCharacterDto>();
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetCurrentUserId());
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == _httpContextService.GetCurrentUserId());
+            if(_httpContextService.GetCurrentCharacter().Result.Data is not null)
+            {
+                response.Success = false;
+                response.Message = "You already have a character, try deleting your current character.";
+                return response;
+            }
             if(request.Strength + request.Defense + request.Intelligence != 30 | request.Defense < 5 | request.Strength < 5 | request.Intelligence < 5)
             {
                 response.Success = false;
@@ -60,7 +49,7 @@ namespace RpgFight.Services.WardrobeService
             }
             var character = _mapper.Map<Character>(request);
             character.User = user;
-            character.UserId = GetCurrentUserId();
+            character.UserId = _httpContextService.GetCurrentUserId();
             _context.Characters.Add(character);
             await _context.SaveChangesAsync();
             response.Data = _mapper.Map<GetCharacterDto>(character);
@@ -73,14 +62,21 @@ namespace RpgFight.Services.WardrobeService
             var response = new ServiceResponse<GetCharacterDto>();
             var c = await _context.Characters
                 .Include(c => c.Class).Include(c => c.Armor).Include(c => c.Weapon).Include(c => c.Skill)
-                .FirstOrDefaultAsync(c => c.UserId == GetCurrentUserId());
+                .FirstOrDefaultAsync(c => c.UserId == _httpContextService.GetCurrentUserId());
             if(c is null)
             {
                 response.Success = false;
                 response.Message = "You have no character, create one first";
                 return response;
             }
-            response.Data = _mapper.Map<GetCharacterDto>(c);
+            var cDto =  _mapper.Map<GetCharacterDto>(c);
+            if(c.Weapon is not null)
+                cDto.Weapon = _dmService.GetWeaponById(c.Weapon!.Id).Result.Data;
+            if(c.Armor is not null)
+                cDto.Armor = _dmService.GetArmorById(c.Armor!.Id).Result.Data;
+            if(c.Skill is not null)
+                cDto.Skill = _dmService.GetSkillById(c.Skill!.Id).Result.Data;
+            response.Data = cDto;
             return response;
         }
 
@@ -94,7 +90,7 @@ namespace RpgFight.Services.WardrobeService
                 response.Message = cls.Result.Message;
                 return response;
             }
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;
@@ -118,7 +114,7 @@ namespace RpgFight.Services.WardrobeService
                 response.Message = weapon.Result.Message;
                 return response;
             }
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;
@@ -141,7 +137,7 @@ namespace RpgFight.Services.WardrobeService
                 response.Message = armor!.Message;
                 return response;
             }
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;
@@ -165,7 +161,7 @@ namespace RpgFight.Services.WardrobeService
                 response.Message = skill!.Message;
                 return response;
             }
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;
@@ -189,7 +185,7 @@ namespace RpgFight.Services.WardrobeService
                 response.Message = "The sum of your stats can't be greater than 30 and all stats must be greater than 5";
                 return response;
             }
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;
@@ -208,7 +204,7 @@ namespace RpgFight.Services.WardrobeService
         public async Task<ServiceResponse<string>> DeleteCharacter()
         {
             var response = new ServiceResponse<string>();
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if (c.Data is null)
             {
                 response.Success = false;

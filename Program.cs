@@ -9,6 +9,8 @@ using RpgFight.Services.DMService;
 using RpgFight.Services.EffectService;
 using RpgFight.Services.WardrobeService;
 using RpgFight.Services.GuildService;
+using RpgFight.Services.ArenaService;
+using RpgFight.Services.HttpContextService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +51,8 @@ builder.Services.AddScoped<IDMService, DMService>();
 builder.Services.AddScoped<IEffectService, EffectService>();
 builder.Services.AddScoped<IWardrobeService, WardobreService>();
 builder.Services.AddScoped<IGuildService, GuildService>();
+builder.Services.AddScoped<IArenaService, ArenaService>();
+builder.Services.AddScoped<IHttpContextService, HttpContextService>();
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

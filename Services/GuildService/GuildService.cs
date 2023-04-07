@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using RpgFight.Services.WardrobeService;
 using RpgFight.Services.DMService;
+using RpgFight.Services.HttpContextService;
 
 namespace RpgFight.Services.GuildService
 {
@@ -17,35 +18,18 @@ namespace RpgFight.Services.GuildService
     {
         private readonly IMapper _mapper;
         private readonly DataContext _context;
-        private readonly IHttpContextAccessor _httpContext;
         private readonly IWardrobeService _wardrobe;
         private readonly IDMService _dmService;
-        public GuildService(IMapper mapper, DataContext context, IHttpContextAccessor httpContext, IWardrobeService wardrobe, IDMService dmService)
+        private readonly IHttpContextService _httpContextService;
+        public GuildService(IMapper mapper, DataContext context, IWardrobeService wardrobe, IDMService dmService, IHttpContextService httpContextService)
         {
             _context = context;
             _mapper = mapper;
-            _httpContext = httpContext;
             _wardrobe = wardrobe;
             _dmService = dmService;
+            _httpContextService = httpContextService;
         }
         // Needed Methods
-        private int GetCurrentUserId() => int.Parse(
-            _httpContext.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!
-        );
-        private async Task<ServiceResponse<Character>> GetCurrentCharacter() 
-        {
-            var response = new ServiceResponse<Character>();
-            var c = await _context.Characters.FirstOrDefaultAsync(c => c.UserId == GetCurrentUserId());
-            if (c is null)
-            {
-                response.Success = false;
-                response.Message = "You have no character, create one first";
-                return response;
-            }
-            response.Message = "This is your current character";
-            response.Data = c;
-            return response;
-        }
         private async Task<Enemy> GetEnemyById(int id)
         {
             var enemy = await _context.Enemies
@@ -60,29 +44,6 @@ namespace RpgFight.Services.GuildService
                 return true;
             }
             return false;
-        }
-        private async Task<ServiceResponse<Enemy>> GetCurrentEnemy()
-        {
-            var response = new ServiceResponse<Enemy>();
-            var c = GetCurrentCharacter();
-            if(c.Result.Data is null)
-            {
-                response.Success = false;
-                response.Message = c.Result.Message;
-                return response;
-            }
-            var enemy = await _context.Enemies
-                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
-                .FirstOrDefaultAsync(e => e.Id == c.Result.Data.EnemyId);
-            if(enemy is null)
-            {
-                response.Success = false;
-                response.Message = "You have no selected enemy";
-                return response;
-            }
-            response.Message = "This is the current enemy model";
-            response.Data = enemy;
-            return response;
         }
         // Enemy Methods
         public async Task<ServiceResponse<List<GetEnemyDto>>> LookAtAllEnemies()
@@ -105,7 +66,7 @@ namespace RpgFight.Services.GuildService
             var response = new ServiceResponse<GetEnemyDto>();
             if(await EnemyExists(id))
             {
-                var c = GetCurrentCharacter();
+                var c = _httpContextService.GetCurrentCharacter();
                 if(c.Result.Data is null)
                 {
                     response.Success = false;
@@ -125,7 +86,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> CreateEnemy(AddEnemyDto request)
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == GetCurrentUserId());
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == _httpContextService.GetCurrentUserId());
             if(request.Strength + request.Defense + request.Intelligence != 30 | request.Defense < 5 | request.Strength < 5 | request.Intelligence < 5)
             {
                 response.Success = false;
@@ -142,7 +103,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> LookAtEnemy()
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var c = await GetCurrentCharacter();
+            var c = await _httpContextService.GetCurrentCharacter();
             if(c.Data is null)
             {
                 response.Success = false;
@@ -153,7 +114,14 @@ namespace RpgFight.Services.GuildService
             if(await EnemyExists(enemyId))
             {
                 var enemy = GetEnemyById(enemyId).Result;
-                response.Data = _mapper.Map<GetEnemyDto>(enemy);
+                var enemyDto = _mapper.Map<GetEnemyDto>(enemy);
+                if(enemy.Weapon is not null)
+                    enemyDto.Weapon = _dmService.GetWeaponById(enemy.Weapon!.Id).Result.Data;
+                if(enemy.Armor is not null)
+                    enemyDto.Armor = _dmService.GetArmorById(enemy.Armor!.Id).Result.Data;
+                if(enemy.Skill is not null)
+                    enemyDto.Skill = _dmService.GetSkillById(enemy.Skill!.Id).Result.Data;
+                response.Data = enemyDto;
                 response.Message = "This is your selected enemy";
                 return response;
             }
@@ -164,7 +132,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> EquipClass(int classId)
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var enemy = await GetCurrentEnemy();
+            var enemy = await _httpContextService.GetCurrentEnemy();
             if(enemy is null)
             {
                 response.Success = false;
@@ -187,7 +155,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> EquipWeapon(int weaponId)
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var enemy = await GetCurrentEnemy();
+            var enemy = await _httpContextService.GetCurrentEnemy();
             if(enemy is null)
             {
                 response.Success = false;
@@ -210,7 +178,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> EquipSkill(int skillId)
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var enemy = await GetCurrentEnemy();
+            var enemy = await _httpContextService.GetCurrentEnemy();
             if(enemy is null)
             {
                 response.Success = false;
@@ -233,7 +201,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<GetEnemyDto>> EquipArmor(int armorId)
         {
             var response = new ServiceResponse<GetEnemyDto>();
-            var enemy = await GetCurrentEnemy();
+            var enemy = await _httpContextService.GetCurrentEnemy();
             if(enemy is null)
             {
                 response.Success = false;
