@@ -24,5 +24,10 @@ namespace RpgFight.Controllers
         {
             return Ok(await _arenaService.SetUpBattle());
         }
+        [HttpPost("Apply Passives teste")]
+        public async Task<ActionResult<ServiceResponse<bool>>> ApplyPassives()
+        {
+            return Ok(await _arenaService.ApplyPassives());
+        }
     }
 }

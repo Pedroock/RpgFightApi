@@ -49,8 +49,7 @@ namespace RpgFight.Services.GuildService
         public async Task<ServiceResponse<List<GetEnemyDto>>> LookAtAllEnemies()
         {
             var response = new ServiceResponse<List<GetEnemyDto>>();
-            var enemies = await _context.Enemies
-                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
+            var enemies = await _context.Enemies // didnt include gear so the list could be less crowded
                 .ToListAsync();
             var enemiesDto = new List<GetEnemyDto>();
             foreach(var e in enemies)

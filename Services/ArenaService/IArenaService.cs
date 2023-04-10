@@ -8,7 +8,8 @@ namespace RpgFight.Services.ArenaService
 {
     public interface IArenaService
     {
-        Task<FightResponse> Fight();
         Task<ServiceResponse<bool>> SetUpBattle();
+        Task<ServiceResponse<bool>> ApplyPassives();
+        Task<FightResponse> Fight();
     }
 }

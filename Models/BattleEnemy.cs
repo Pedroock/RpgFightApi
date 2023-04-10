@@ -19,7 +19,7 @@ namespace RpgFight.Models
         public Armor? Armor {get;set;}
         public Skill? Skill { get; set; }
         public List<BattleEnemyEffect>? BattleEnemyEffects {get;set;}
-        public BattleCharacter? BattleCharacter {get;set;}
-        public int BattleCharacterId { get; set; }
+        public User? User {get;set;}
+        public int UserId { get; set; }
     }
 }
