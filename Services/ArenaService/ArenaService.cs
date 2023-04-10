@@ -297,6 +297,7 @@ namespace RpgFight.Services.ArenaService
         public async Task<RoundResponse> FightOneRound()
         {
             throw new NotImplementedException();
+            // test for commit on github desktop
         }
 
     }
