@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,20 +38,18 @@ namespace RpgFight.Services.ArenaService
         }
         private async Task<bool> HasBattleModels()
         {
-            var battleChar = await _context.BattleCharacters
+            var battleModel = await _context.BattleModels
                 .FirstOrDefaultAsync(be => be.UserId == _httpContextService.GetCurrentUserId());
-            var battleEnemy = await _context.BattleEnemies
-                .FirstOrDefaultAsync(be => be.UserId == _httpContextService.GetCurrentUserId());
-            if(battleEnemy is null & battleChar is null)
+            if(battleModel is null )
             {
                 return false;
             }
             return true;
         }
         // SetUpBattle
-        private BattleCharacter HardMapBattleCharacter(Character c)
+        private async Task<BattleModel> HardMapBattleCharacter(Character c)
         {
-            var battleChar = new BattleCharacter{
+            var battleChar = new BattleModel{
             Name = c.Name,
             HitPoint = c.HitPoint,
             Strength = c.Strength,
@@ -60,15 +59,16 @@ namespace RpgFight.Services.ArenaService
             Weapon = c.Weapon,
             Armor = c.Armor,
             Skill = c.Skill,
-            User = GetCurrentUser().Result,
+            IsChar = true,
+            User = await GetCurrentUser(),
             UserId = _httpContextService.GetCurrentUserId(),
             };
             return battleChar;
         }
         private void HardEditBattleCharacter(Character c)
         {
-            var battleChar = _context.BattleCharacters
-                .FirstOrDefault(be => be.UserId == _httpContextService.GetCurrentUserId());
+            var battleChar = _context.BattleModels.FirstOrDefault
+                (bc => bc.UserId == _httpContextService.GetCurrentUserId() & bc.IsChar == true);
             battleChar!.Name = c.Name;
             battleChar.HitPoint = c.HitPoint;
             battleChar.Strength = c.Strength;
@@ -79,9 +79,9 @@ namespace RpgFight.Services.ArenaService
             battleChar.Armor = c.Armor;
             battleChar.Skill = c.Skill;
         }
-        private BattleEnemy HardMapBattleEnemy(Enemy e)
+        private async Task<BattleModel> HardMapBattleEnemy(Enemy e)
         {
-            var battleEnemy = new BattleEnemy{
+            var battleEnemy = new BattleModel{
                 Name = e.Name,
                 HitPoint = e.HitPoint,
                 Strength = e.Strength,
@@ -91,15 +91,16 @@ namespace RpgFight.Services.ArenaService
                 Weapon = e.Weapon,
                 Armor = e.Armor,
                 Skill = e.Skill,
-                User = GetCurrentUser().Result,
+                IsChar = false,
+                User = await GetCurrentUser(),
                 UserId = _httpContextService.GetCurrentUserId(),
             };
             return battleEnemy;
         }
         private void HardEditBattleEnemy(Enemy e)
         {
-            var battleEnemy = _context.BattleEnemies
-                .FirstOrDefault(be => be.UserId == _httpContextService.GetCurrentUserId());
+            var battleEnemy = _context.BattleModels.FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
             battleEnemy!.Name = e.Name;
             battleEnemy.HitPoint = e.HitPoint;
             battleEnemy.Strength = e.Strength;
@@ -110,12 +111,11 @@ namespace RpgFight.Services.ArenaService
             battleEnemy.Armor = e.Armor;
             battleEnemy.Skill = e.Skill;
         }
-        public async Task<ServiceResponse<bool>> SetUpBattle()
+        public async Task<VoidServiceResponse> SetUpBattle()
         {
-            var response = new ServiceResponse<bool>();
+            var response = new VoidServiceResponse();
             var c = await _httpContextService.GetCurrentCharacter();
             var enemy = await _httpContextService.GetCurrentEnemy();
-            var user = GetCurrentUser().Result;
             if(c.Data is null)
             {
                 response.Success = false;
@@ -128,12 +128,12 @@ namespace RpgFight.Services.ArenaService
                 response.Message = enemy.Message;
                 return response;
             }
-            if(HasBattleModels().Result is false)
+            if(await HasBattleModels() is false)
             {
-                var battleChar = HardMapBattleCharacter(c.Data);
-                var battleEnemy = HardMapBattleEnemy(enemy.Data);
-                _context.BattleCharacters.Add(battleChar);
-                _context.BattleEnemies.Add(battleEnemy);
+                var battleChar = await HardMapBattleCharacter(c.Data);
+                var battleEnemy = await HardMapBattleEnemy(enemy.Data);
+                _context.BattleModels.Add(battleEnemy);
+                _context.BattleModels.Add(battleChar);
                 await _context.SaveChangesAsync();
                 response.Message = "The battle models have been created";
             }
@@ -144,97 +144,75 @@ namespace RpgFight.Services.ArenaService
                 await _context.SaveChangesAsync();
                 response.Message = "The battle models have been updated";
             }
-            response.Data = true;
             return response;
         }
         // Apply passives
-        private void ApplyClassPassive()
+        private VoidServiceResponse ApplyClassPassive(BattleModel battleModel)
         {
-            var battleChar =  _context.BattleCharacters
-                .FirstOrDefault(bc => bc.UserId == _httpContextService.GetCurrentUserId());
-            if(battleChar!.Class is null)
+            var response = new VoidServiceResponse();
+            if(battleModel!.Class is null)
             {
-                return;
+                response.Message = "There is no class for the character";
+                return response;
             }
-            var classIdChar = battleChar.Class!.Id;
+            var classIdChar = battleModel.Class!.Id;
             switch(classIdChar)
             {
                 case 1:
-                    battleChar.Intelligence += 5;
-                    battleChar.Strength += 5;
-                    battleChar.HitPoint += 15;
-                    battleChar.Defense += 5;
-                    return;
+                    battleModel.Intelligence += 5;
+                    battleModel.Strength += 5;
+                    battleModel.HitPoint += 15;
+                    battleModel.Defense += 5;
+                    response.Message = "Applied class change";
+                    return response;
                 case 2:
-                    battleChar.Strength += 10;
-                    battleChar.HitPoint += 10;
-                    battleChar.Defense += 10;
-                    return;
+                    battleModel.Strength += 10;
+                    battleModel.HitPoint += 10;
+                    battleModel.Defense += 10;
+                    response.Message = "Applied class change";
+                    return response;
                 case 3:
-                    battleChar.Intelligence -= 5;
-                    battleChar.Strength += 30;
-                    battleChar.HitPoint += 10;
-                    battleChar.Defense -= 5;
-                    return;
+                    battleModel.Intelligence -= 5;
+                    battleModel.Strength += 30;
+                    battleModel.HitPoint += 10;
+                    battleModel.Defense -= 5;
+                    response.Message = "Applied class change";
+                    return response;
                 case 4:
-                    battleChar.Intelligence += 30;
-                    battleChar.Strength -= 5;
-                    battleChar.HitPoint += 10;
-                    battleChar.Defense -= 5;
-                    return;
+                    battleModel.Intelligence += 30;
+                    battleModel.Strength -= 5;
+                    battleModel.HitPoint += 10;
+                    battleModel.Defense -= 5;
+                    response.Message = "Applied class change";
+                    return response;
                 case 5:
-                    battleChar.Intelligence += 20;
-                    battleChar.Strength += 10;
-                    battleChar.HitPoint -= 10;
-                    battleChar.Defense += 10;
-                    return;
+                    battleModel.Intelligence += 20;
+                    battleModel.Strength += 10;
+                    battleModel.HitPoint -= 10;
+                    battleModel.Defense += 10;
+                    response.Message = "Applied class change";
+                    return response;
             }
-            var battleEnemy = _context.BattleEnemies
-                .FirstOrDefault(bc => bc.UserId == _httpContextService.GetCurrentUserId());
-            if(battleEnemy!.Class is null)
-            {
-                return;
-            }
-            var classIdEnemy = battleEnemy.Class!.Id;
-            switch(classIdEnemy)
-            {
-                case 1:
-                    battleEnemy.Intelligence += 5;
-                    battleEnemy.Strength += 5;
-                    battleEnemy.HitPoint += 15;
-                    battleEnemy.Defense += 5;
-                    return;
-                case 2:
-                    battleEnemy.Strength += 10;
-                    battleEnemy.HitPoint += 10;
-                    battleEnemy.Defense += 10;
-                    return;
-                case 3:
-                    battleEnemy.Intelligence -= 5;
-                    battleEnemy.Strength += 30;
-                    battleEnemy.HitPoint += 10;
-                    battleEnemy.Defense -= 5;
-                    return;
-                case 4:
-                    battleEnemy.Intelligence += 30;
-                    battleEnemy.Strength -= 5;
-                    battleEnemy.HitPoint += 10;
-                    battleEnemy.Defense -= 5;
-                    return;
-                case 5:
-                    battleEnemy.Intelligence += 20;
-                    battleEnemy.Strength += 10;
-                    battleEnemy.HitPoint -= 10;
-                    battleEnemy.Defense += 10;
-                    return;
-            }
+            response.Success = false;
+            response.Message = "ClassId error";
+            return response;
         }
-        public async Task<ServiceResponse<bool>> ApplyPassives()
+        public async Task<VoidServiceResponse> ApplyPassives()
         {
-            var response = new ServiceResponse<bool>();
-            ApplyClassPassive();
+            var response = new VoidServiceResponse();
+            var battleEnemy = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor).FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
+            var battleChar = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
+                .FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
+                
+            var x1 = ApplyClassPassive(battleChar!);
+            var x2 = ApplyClassPassive(battleEnemy!);
             await _context.SaveChangesAsync();
-            response.Message = "The passive changes have been applied";
+            response.Message = "The passive changes have been applied" + "/" + x1.Message
+            + "/" + x2.Message;
             return response;
         }
         // Fight
@@ -249,3 +227,6 @@ namespace RpgFight.Services.ArenaService
 
     }
 }
+
+
+

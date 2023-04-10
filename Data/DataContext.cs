@@ -27,26 +27,15 @@ namespace RpgFight.Data
                 .WithMany(e => e.ArmorEffects)
                 .HasForeignKey(ae => ae.EffectId);
                 
-            modelBuilder.Entity<BattleCharacterEffect>()
-                .HasKey(be => new {be.BattleCharacterId, be.EffectId});
-            modelBuilder.Entity<BattleCharacterEffect>()
-                .HasOne<BattleCharacter>(be => be.BattleCharacter)
-                .WithMany(b => b.BattleCharacterEffects)
-                .HasForeignKey(be => be.BattleCharacterId);
-            modelBuilder.Entity<BattleCharacterEffect>()
+            modelBuilder.Entity<BattleModelEffect>()
+                .HasKey(be => new {be.BattleModelId, be.EffectId});
+            modelBuilder.Entity<BattleModelEffect>()
+                .HasOne<BattleModel>(be => be.BattleModel)
+                .WithMany(b => b.BattleModelEffects)
+                .HasForeignKey(be => be.BattleModelId);
+            modelBuilder.Entity<BattleModelEffect>()
                 .HasOne<Effect>(be => be.Effect)
-                .WithMany(e => e.BattleCharacterEffects)
-                .HasForeignKey(be => be.EffectId);
-            
-            modelBuilder.Entity<BattleEnemyEffect>()
-                .HasKey(be => new {be.BattleEnemyId, be.EffectId});
-            modelBuilder.Entity<BattleEnemyEffect>()
-                .HasOne<BattleEnemy>(be => be.BattleEnemy)
-                .WithMany(b => b.BattleEnemyEffects)
-                .HasForeignKey(be => be.BattleEnemyId);
-            modelBuilder.Entity<BattleEnemyEffect>()
-                .HasOne<Effect>(be => be.Effect)
-                .WithMany(e => e.BattleEnemyEffects)
+                .WithMany(e => e.BattleModelEffects)
                 .HasForeignKey(be => be.EffectId);
 
             modelBuilder.Entity<SkillEffect>()
@@ -245,8 +234,7 @@ namespace RpgFight.Data
             */
         }
         public DbSet<Armor> Armors => Set<Armor>();
-        public DbSet<BattleCharacter> BattleCharacters => Set<BattleCharacter>();
-        public DbSet<BattleEnemy> BattleEnemies => Set<BattleEnemy>();
+        public DbSet<BattleModel> BattleModels => Set<BattleModel>();
         public DbSet<Character> Characters => Set<Character>();
         public DbSet<Class> Classs => Set<Class>();
         public DbSet<Effect> Effects => Set<Effect>();
@@ -256,8 +244,7 @@ namespace RpgFight.Data
         public DbSet<Weapon> Weapons => Set<Weapon>();
         // Joins
         public DbSet<ArmorEffect> ArmorEffects => Set<ArmorEffect>();
-        public DbSet<BattleCharacterEffect> BattleCharacterEffects => Set<BattleCharacterEffect>();
-        public DbSet<BattleEnemyEffect> BattleEnemyEffects => Set<BattleEnemyEffect>();
+        public DbSet<BattleModelEffect> BattleModelEffects => Set<BattleModelEffect>();
         public DbSet<SkillEffect> SkillEffects => Set<SkillEffect>();
         public DbSet<WeaponEffect> WeaponEffects => Set<WeaponEffect>();
     }

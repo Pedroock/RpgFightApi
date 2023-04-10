@@ -6,7 +6,7 @@ using RpgFight.Models.Joins;
 
 namespace RpgFight.Models
 {
-    public class BattleEnemy
+    public class BattleModel
     {
         public int Id {get;set;}
         public string Name {get;set;} = string.Empty;
@@ -18,7 +18,8 @@ namespace RpgFight.Models
         public Weapon? Weapon {get;set;}
         public Armor? Armor {get;set;}
         public Skill? Skill { get; set; }
-        public List<BattleEnemyEffect>? BattleEnemyEffects {get;set;}
+        public List<BattleModelEffect>? BattleModelEffects {get;set;}
+        public bool IsChar { get; set; }
         public User? User {get;set;}
         public int UserId { get; set; }
     }

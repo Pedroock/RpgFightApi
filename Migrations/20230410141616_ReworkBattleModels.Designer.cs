@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RpgFight.Data;
 
@@ -11,9 +12,11 @@ using RpgFight.Data;
 namespace RpgFight.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20230410141616_ReworkBattleModels")]
+    partial class ReworkBattleModels
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -109,9 +112,6 @@ namespace RpgFight.Migrations
                     b.Property<int>("Intelligence")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsChar")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -136,7 +136,8 @@ namespace RpgFight.Migrations
 
                     b.HasIndex("SkillId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.HasIndex("WeaponId");
 
@@ -1028,8 +1029,8 @@ namespace RpgFight.Migrations
                         .HasForeignKey("SkillId");
 
                     b.HasOne("RpgFight.Models.User", "User")
-                        .WithMany("BattleModel")
-                        .HasForeignKey("UserId")
+                        .WithOne("BattleModels")
+                        .HasForeignKey("RpgFight.Models.BattleModel", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1218,7 +1219,7 @@ namespace RpgFight.Migrations
 
             modelBuilder.Entity("RpgFight.Models.User", b =>
                 {
-                    b.Navigation("BattleModel");
+                    b.Navigation("BattleModels");
 
                     b.Navigation("Characters");
                 });
