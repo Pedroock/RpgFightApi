@@ -11,6 +11,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using RpgFight.Services.HttpContextService;
 using AutoMapper;
+using RpgFight.Dtos.Effect;
 
 namespace RpgFight.Services.ArenaService
 {
@@ -163,38 +164,108 @@ namespace RpgFight.Services.ArenaService
                     battleModel.Strength += 5;
                     battleModel.HitPoint += 15;
                     battleModel.Defense += 5;
-                    response.Message = "Applied class change";
+                    response.Message = "Knight";
                     return response;
                 case 2:
                     battleModel.Strength += 10;
                     battleModel.HitPoint += 10;
                     battleModel.Defense += 10;
-                    response.Message = "Applied class change";
+                    response.Message = "Crusader";
                     return response;
                 case 3:
                     battleModel.Intelligence -= 5;
                     battleModel.Strength += 30;
                     battleModel.HitPoint += 10;
                     battleModel.Defense -= 5;
-                    response.Message = "Applied class change";
+                    response.Message = "Berserker";
                     return response;
                 case 4:
                     battleModel.Intelligence += 30;
                     battleModel.Strength -= 5;
                     battleModel.HitPoint += 10;
                     battleModel.Defense -= 5;
-                    response.Message = "Applied class change";
+                    response.Message = "Mage";
                     return response;
                 case 5:
                     battleModel.Intelligence += 20;
                     battleModel.Strength += 10;
                     battleModel.HitPoint -= 10;
                     battleModel.Defense += 10;
-                    response.Message = "Applied class change";
+                    response.Message = "Witch";
                     return response;
             }
             response.Success = false;
             response.Message = "ClassId error";
+            return response;
+        }
+        private VoidServiceResponse ApplyWeaponPassive(BattleModel battleModel)
+        {
+            var response = new VoidServiceResponse();
+            if(battleModel.Weapon is null)
+            {
+                response.Message = "There is no weapon";
+                return response;
+            }
+            var fxs = _fxService.GetWeaponFxById(battleModel.Weapon!.Id).Result;
+            foreach(GetEffectDto fx in fxs)
+            {
+                switch(fx.Id)
+                {
+                    case 7:
+                        battleModel.Strength += 5;
+                        break;
+                    case 8:
+                        battleModel.Strength -= 5;
+                        break;
+                    case 9:
+                        battleModel.Intelligence += 5;
+                        break;
+                    case 10:
+                        battleModel.Intelligence -= 5;
+                        break;
+                    case 11:
+                        battleModel.Defense += 5;
+                        break;
+                    case 12:
+                        battleModel.Defense -= 5;
+                        break;
+                }
+            }
+            return response;
+        }
+        private VoidServiceResponse ApplyArmorPassive(BattleModel battleModel)
+        {
+            var response = new VoidServiceResponse();
+            if(battleModel.Armor is null)
+            {
+                response.Message = "There is no armor";
+                return response;
+            }
+            var fxs = _fxService.GetArmorFxById(battleModel.Armor!.Id).Result;
+            foreach(GetEffectDto fx in fxs)
+            {
+                switch(fx.Id)
+                {
+                    case 7:
+                        battleModel.Strength += 5;
+                        break;
+                    case 8:
+                        battleModel.Strength -= 5;
+                        break;
+                    case 9:
+                        battleModel.Intelligence += 5;
+                        break;
+                    case 10:
+                        battleModel.Intelligence -= 5;
+                        break;
+                    case 11:
+                        battleModel.Defense += 5;
+                        break;
+                    case 12:
+                        battleModel.Defense -= 5;
+                        break;
+                }
+            }
             return response;
         }
         public async Task<VoidServiceResponse> ApplyPassives()
@@ -207,12 +278,15 @@ namespace RpgFight.Services.ArenaService
                 .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
                 .FirstOrDefault
                 (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
-                
-            var x1 = ApplyClassPassive(battleChar!);
-            var x2 = ApplyClassPassive(battleEnemy!);
+            var bccls = ApplyClassPassive(battleChar!);
+            var becls = ApplyClassPassive(battleEnemy!);
+            var bcwpn = ApplyWeaponPassive(battleChar!);
+            var bewpn = ApplyWeaponPassive(battleEnemy!);
+            var bcamr = ApplyArmorPassive(battleChar!);
+            var beamr = ApplyArmorPassive(battleEnemy!);
             await _context.SaveChangesAsync();
-            response.Message = "The passive changes have been applied" + "/" + x1.Message
-            + "/" + x2.Message;
+            response.Message = "The passive changes have been applied" + " / " + bccls.Message
+            + " / " + becls.Message;
             return response;
         }
         // Fight
