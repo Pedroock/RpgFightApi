@@ -29,5 +29,10 @@ namespace RpgFight.Controllers
         {
             return Ok(await _arenaService.ApplyPassives());
         }
+        [HttpPost("Attack")]
+        public ActionResult<VoidServiceResponse> Attack()
+        {
+            return Ok(_arenaService.Attack());
+        }
     }
 }

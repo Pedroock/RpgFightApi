@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using RpgFight.Services.HttpContextService;
 using AutoMapper;
 using RpgFight.Dtos.Effect;
+using RpgFight.Models.Joins;
 
 namespace RpgFight.Services.ArenaService
 {
@@ -112,6 +113,18 @@ namespace RpgFight.Services.ArenaService
             battleEnemy.Armor = e.Armor;
             battleEnemy.Skill = e.Skill;
         }
+        private void CleanEffects()
+        {
+            var battleEnemy = _context.BattleModels.FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
+            var battleChar = _context.BattleModels.FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
+            var bCharFxs = _context.BattleModelEffects.Where(bme => bme.BattleModelId == battleChar!.Id);
+            var bEnemyFxs = _context.BattleModelEffects.Where(bme => bme.BattleModelId == battleEnemy!.Id);
+            _context.BattleModelEffects.RemoveRange(bCharFxs);
+            _context.BattleModelEffects.RemoveRange(bEnemyFxs);
+            _context.SaveChanges();
+        }
         public async Task<VoidServiceResponse> SetUpBattle()
         {
             var response = new VoidServiceResponse();
@@ -145,6 +158,7 @@ namespace RpgFight.Services.ArenaService
                 await _context.SaveChangesAsync();
                 response.Message = "The battle models have been updated";
             }
+            CleanEffects();
             return response;
         }
         // Apply passives
@@ -288,6 +302,164 @@ namespace RpgFight.Services.ArenaService
             response.Message = "The passive changes have been applied" + " / " + bccls.Message
             + " / " + becls.Message;
             return response;
+        }
+        // Attack 
+        private int ChooseAttack(BattleModel attacker)
+        {
+            var rnd = new Random();
+            var diff = attacker.Strength - attacker.Intelligence;
+            if(attacker.Strength > attacker.Intelligence)
+            {
+                if(rnd.Next(1, 101) <= 50 + Math.Abs(diff))
+                {
+                    return 1;
+                }
+                return 0;
+            }
+            else
+            {
+                if(rnd.Next(1, 101) <= 50 + Math.Abs(diff))
+                {
+                    return 0;
+                }
+                return 1;
+            }
+        }
+        private int GetProtection(BattleModel model)
+        {
+            var armorFxs = _fxService.GetArmorFxById(model!.Armor!.Id);
+            foreach(GetEffectDto fx in armorFxs.Result)
+            {
+                switch(fx.Id)
+                {
+                    case 14:
+                        return 10;
+                    case 15:
+                        return 20;
+                    case 16:
+                        return 30;
+                }
+            }
+            return 0;
+        }
+        private bool HasRiposte(BattleModel model)
+        {
+            var armorFxs = _fxService.GetArmorFxById(model!.Armor!.Id);
+            foreach(GetEffectDto fx in armorFxs.Result)
+            {
+                if(fx.Id == 13)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        private VoidServiceResponse ApplyWeaponActive(BattleModel attacker, BattleModel receiver)
+        {
+            var response = new VoidServiceResponse();
+            response.Message = "The effects: ";
+            var fxs = _fxService.GetWeaponFxById(attacker.Weapon!.Id).Result;
+            foreach(GetEffectDto fx in fxs)
+            {
+                if(fx.Duration == 1)
+                {
+                    var data = new BattleModelEffect{BattleModelId = receiver.Id, EffectId = fx.Id};
+                    _context.BattleModelEffects.Add(data);
+                    _context.SaveChanges();
+                    response.Message += $"/{fx.Name}/ ";
+                }
+            }
+            if(response.Message == "The effects: ")
+            {
+                response.Message = $"No weapon effects were applied to {receiver.Name}";
+            }
+            else{
+                response.Message += $"were applied to {receiver.Name}";
+            }
+            return response;
+        }
+        private VoidServiceResponse ApplySkillActive(BattleModel attacker, BattleModel receiver)
+        {
+            var response = new VoidServiceResponse();
+            response.Message = "The effects: ";
+            var fxs = _fxService.GetSkillFxById(attacker.Skill!.Id).Result;
+            foreach(GetEffectDto fx in fxs)
+            {
+                if(fx.Duration == 1)
+                {
+                    var data = new BattleModelEffect{BattleModelId = receiver.Id, EffectId = fx.Id};
+                    _context.BattleModelEffects.Add(data);
+                    _context.SaveChanges();
+                    response.Message += $"/{fx.Name}/ ";
+                }
+            }
+            if(response.Message == "The effects: ")
+            {
+                response.Message = $"No weapon effects were applied to {receiver.Name}";
+            }
+            else{
+                response.Message += $"were applied to {receiver.Name}";
+            }
+            return response;
+        }
+        private VoidServiceResponse UseAttack(BattleModel attacker, BattleModel receiver, int type)
+        {
+            var response = new VoidServiceResponse();
+            int dmgRaw = 0;
+            string aplyMsg = string.Empty;
+            if(type == 1)
+            { 
+                dmgRaw = attacker.Weapon!.Damage;
+                aplyMsg = ApplyWeaponActive(attacker, receiver).Message;
+            }
+            if(type == 0)
+            {
+                dmgRaw = attacker.Skill!.Damage;
+                aplyMsg = ApplySkillActive(attacker, receiver).Message;
+            }
+            var receiverProt =  GetProtection(receiver);
+            var dmg = dmgRaw * (100 - receiverProt) / 100;
+            var blockedDmg = dmgRaw - dmg;
+            if(HasRiposte(receiver))
+            {
+                var riposteDmg = dmg * 10 / 100;
+                attacker.HitPoint -= riposteDmg;
+                receiver.HitPoint -= dmg;
+                response.Message = $"{attacker.Name} has attacked ${receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
+                response.Message +=  aplyMsg;
+                _context.SaveChanges();
+                return response;
+            }
+            receiver.HitPoint -= dmg;
+            response.Message = $"{attacker.Name} has used his weapon to attack ${receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
+            response.Message +=  aplyMsg;
+            _context.SaveChanges();
+            return response;
+        }
+        // public VoidServiceResponse Attack(BattleModel attacker, BattleModel receiver)
+        public VoidServiceResponse Attack()
+        {
+            var receiver = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor).FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
+            var attacker = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
+                .FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
+            var response = new VoidServiceResponse();
+            if(ChooseAttack(attacker) == 1)
+            {
+                var Atkmsg = UseAttack(attacker, receiver, 1).Message;
+                response.Message = Atkmsg;
+                return response;
+            }
+            else
+            {
+                var Atkmsg = UseAttack(attacker, receiver, 0).Message;
+                response.Message = Atkmsg;
+                return response;
+            }
         }
         // Fight
         public async Task<FightResponse> Fight()
