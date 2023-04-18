@@ -7,8 +7,9 @@ namespace RpgFight.Models
 {
     public class FightResponse
     {
+        public bool Success { get; set; } = true;
         public string Intro { get; set; } = string.Empty;
-        List<RoundResponse>? Round {get;set;}
+        List<RoundResponse>? Rounds {get;set;}
         public string Outro {get;set;} = string.Empty;
     }
 }

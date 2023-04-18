@@ -48,6 +48,61 @@ namespace RpgFight.Services.ArenaService
             }
             return true;
         }
+        // Check Gear
+        private async Task<VoidServiceResponse> CheckGear()
+        {
+            var response = new VoidServiceResponse();
+            var c = await _httpContextService.GetCurrentCharacter();
+            var enemy = await _httpContextService.GetCurrentEnemy();
+            if(c.Data is null)
+            {
+                response.Success = false;
+                response.Message = c.Message;
+                return response;
+            }
+            if(enemy.Data is null)
+            {
+                response.Success = false;
+                response.Message = enemy.Message;
+                return response;
+            }
+            var unquipedChar = new List<string>();
+            if(c.Data.Weapon is null) unquipedChar.Add("/weapon/ ");
+            if(c.Data.Skill is null) unquipedChar.Add("/skill/ ");
+            if(c.Data.Armor is null) unquipedChar.Add("/armor/ ");
+            if(c.Data.Class is null) unquipedChar.Add("/class/ ");
+            if(unquipedChar.Count != 0)
+            {
+                response.Success = false;
+                var message = "The character has no ";
+                foreach(string gear in unquipedChar)
+                {
+                    message += gear;
+                }
+                message += "equiped";
+                response.Message = message;
+                return response;
+            }
+            var unquipedEnemy = new List<string>();
+            if(enemy.Data.Weapon is null) unquipedEnemy.Add("/weapon/ ");
+            if(enemy.Data.Skill is null) unquipedEnemy.Add("/skill/ ");
+            if(enemy.Data.Armor is null) unquipedEnemy.Add("/armor/ ");
+            if(enemy.Data.Class is null) unquipedEnemy.Add("/class/ ");
+            if(unquipedEnemy.Count != 0)
+            {
+                response.Success = false;
+                var message = "The character has no ";
+                foreach(string gear in unquipedEnemy)
+                {
+                    message += gear;
+                }
+                message += "equiped";
+                response.Message = message;
+                return response;
+            }
+            response.Message = "Everything checks";
+            return response;
+        }
         // SetUpBattle
         private async Task<BattleModel> HardMapBattleCharacter(Character c)
         {
@@ -130,22 +185,10 @@ namespace RpgFight.Services.ArenaService
             var response = new VoidServiceResponse();
             var c = await _httpContextService.GetCurrentCharacter();
             var enemy = await _httpContextService.GetCurrentEnemy();
-            if(c.Data is null)
-            {
-                response.Success = false;
-                response.Message = c.Message;
-                return response;
-            }
-            if(enemy.Data is null)
-            {
-                response.Success = false;
-                response.Message = enemy.Message;
-                return response;
-            }
             if(await HasBattleModels() is false)
             {
-                var battleChar = await HardMapBattleCharacter(c.Data);
-                var battleEnemy = await HardMapBattleEnemy(enemy.Data);
+                var battleChar = await HardMapBattleCharacter(c.Data!);
+                var battleEnemy = await HardMapBattleEnemy(enemy.Data!);
                 _context.BattleModels.Add(battleEnemy);
                 _context.BattleModels.Add(battleChar);
                 await _context.SaveChangesAsync();
@@ -153,8 +196,8 @@ namespace RpgFight.Services.ArenaService
             }
             else
             {
-                HardEditBattleCharacter(c.Data);
-                HardEditBattleEnemy(enemy.Data);
+                HardEditBattleCharacter(c.Data!);
+                HardEditBattleEnemy(enemy.Data!);
                 await _context.SaveChangesAsync();
                 response.Message = "The battle models have been updated";
             }
@@ -162,14 +205,9 @@ namespace RpgFight.Services.ArenaService
             return response;
         }
         // Apply passives
-        private VoidServiceResponse ApplyClassPassive(BattleModel battleModel)
+        private void ApplyClassPassive(BattleModel battleModel)
         {
             var response = new VoidServiceResponse();
-            if(battleModel!.Class is null)
-            {
-                response.Message = "There is no class for the character";
-                return response;
-            }
             var classIdChar = battleModel.Class!.Id;
             switch(classIdChar)
             {
@@ -179,47 +217,39 @@ namespace RpgFight.Services.ArenaService
                     battleModel.HitPoint += 15;
                     battleModel.Defense += 5;
                     response.Message = "Knight";
-                    return response;
+                    break;
                 case 2:
                     battleModel.Strength += 10;
                     battleModel.HitPoint += 10;
                     battleModel.Defense += 10;
                     response.Message = "Crusader";
-                    return response;
+                    break;
                 case 3:
                     battleModel.Intelligence -= 5;
                     battleModel.Strength += 30;
                     battleModel.HitPoint += 10;
                     battleModel.Defense -= 5;
                     response.Message = "Berserker";
-                    return response;
+                    break;
                 case 4:
                     battleModel.Intelligence += 30;
                     battleModel.Strength -= 5;
                     battleModel.HitPoint += 10;
                     battleModel.Defense -= 5;
                     response.Message = "Mage";
-                    return response;
+                    break;
                 case 5:
                     battleModel.Intelligence += 20;
                     battleModel.Strength += 10;
                     battleModel.HitPoint -= 10;
                     battleModel.Defense += 10;
                     response.Message = "Witch";
-                    return response;
+                    break;
             }
-            response.Success = false;
-            response.Message = "ClassId error";
-            return response;
         }
-        private VoidServiceResponse ApplyWeaponPassive(BattleModel battleModel)
+        private void ApplyWeaponPassive(BattleModel battleModel)
         {
             var response = new VoidServiceResponse();
-            if(battleModel.Weapon is null)
-            {
-                response.Message = "There is no weapon";
-                return response;
-            }
             var fxs = _fxService.GetWeaponFxById(battleModel.Weapon!.Id).Result;
             foreach(GetEffectDto fx in fxs)
             {
@@ -245,16 +275,10 @@ namespace RpgFight.Services.ArenaService
                         break;
                 }
             }
-            return response;
         }
-        private VoidServiceResponse ApplyArmorPassive(BattleModel battleModel)
+        private void ApplyArmorPassive(BattleModel battleModel)
         {
             var response = new VoidServiceResponse();
-            if(battleModel.Armor is null)
-            {
-                response.Message = "There is no armor";
-                return response;
-            }
             var fxs = _fxService.GetArmorFxById(battleModel.Armor!.Id).Result;
             foreach(GetEffectDto fx in fxs)
             {
@@ -280,7 +304,6 @@ namespace RpgFight.Services.ArenaService
                         break;
                 }
             }
-            return response;
         }
         public async Task<VoidServiceResponse> ApplyPassives()
         {
@@ -292,15 +315,14 @@ namespace RpgFight.Services.ArenaService
                 .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
                 .FirstOrDefault
                 (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
-            var bccls = ApplyClassPassive(battleChar!);
-            var becls = ApplyClassPassive(battleEnemy!);
-            var bcwpn = ApplyWeaponPassive(battleChar!);
-            var bewpn = ApplyWeaponPassive(battleEnemy!);
-            var bcamr = ApplyArmorPassive(battleChar!);
-            var beamr = ApplyArmorPassive(battleEnemy!);
+            ApplyClassPassive(battleChar!);
+            ApplyClassPassive(battleEnemy!);
+            ApplyWeaponPassive(battleChar!);
+            ApplyWeaponPassive(battleEnemy!);
+            ApplyArmorPassive(battleChar!);
+            ApplyArmorPassive(battleEnemy!);
             await _context.SaveChangesAsync();
-            response.Message = "The passive changes have been applied" + " / " + bccls.Message
-            + " / " + becls.Message;
+            response.Message = "The passive changes have been applied";
             return response;
         }
         // Attack 
@@ -426,20 +448,20 @@ namespace RpgFight.Services.ArenaService
                 var riposteDmg = dmg * 10 / 100;
                 attacker.HitPoint -= riposteDmg;
                 receiver.HitPoint -= dmg;
-                response.Message = $"{attacker.Name} has attacked ${receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
+                response.Message = $"{attacker.Name} has attacked {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
                 response.Message +=  aplyMsg;
                 _context.SaveChanges();
                 return response;
             }
             receiver.HitPoint -= dmg;
-            response.Message = $"{attacker.Name} has used his weapon to attack ${receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
+            response.Message = $"{attacker.Name} has used his weapon to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
             response.Message +=  aplyMsg;
             _context.SaveChanges();
             return response;
         }
-        // public VoidServiceResponse Attack(BattleModel attacker, BattleModel receiver)
         public VoidServiceResponse Attack()
         {
+            // vai tirar essas vars
             var receiver = _context.BattleModels
                 .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor).FirstOrDefault
                 (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
@@ -448,7 +470,7 @@ namespace RpgFight.Services.ArenaService
                 .FirstOrDefault
                 (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
             var response = new VoidServiceResponse();
-            if(ChooseAttack(attacker) == 1)
+            if(ChooseAttack(attacker!) == 1)
             {
                 var Atkmsg = UseAttack(attacker, receiver, 1).Message;
                 response.Message = Atkmsg;
@@ -464,12 +486,31 @@ namespace RpgFight.Services.ArenaService
         // Fight
         public async Task<FightResponse> Fight()
         {
+            var response = new FightResponse();
+            var gearResponse = CheckGear().Result;
+            if(gearResponse.Success == false)
+            {
+                response.Success = false;
+                response.Intro = gearResponse.Message;
+                return response;
+            }
+            var setupResponse = SetUpBattle();
+            if(setupResponse.Result.Success == false)
+            {
+                response.Success = false;
+                response.Intro = setupResponse.Result.Message;
+                return response;
+            }
+            var applyPassivesResponse = ApplyPassives();
+
+            // fight rounds
+
+
             throw new NotImplementedException();
         }
         public async Task<RoundResponse> FightOneRound()
         {
             throw new NotImplementedException();
-            // test for commit on github desktop
         }
 
     }
