@@ -325,6 +325,35 @@ namespace RpgFight.Services.ArenaService
             response.Message = "The passive changes have been applied";
             return response;
         }
+        // IsAlive
+        private VoidServiceResponse IsAlive(BattleModel model, int dmgType)
+        {
+            // dmgType -> 1 = weapon/skill      2 = active effect      3 = riposte
+            var response = new VoidServiceResponse();
+            if(model.HitPoint > 0)
+            {
+                return response;
+            }
+            else
+            {
+                response.Success = false;
+                if(dmgType == 1)
+                {
+                    response.Message = $"That was a fatal blow for {model.Name}, who goes down never to come back.";
+                    return response;
+                }
+                else if(dmgType == 2)
+                {
+                    response.Message = $"The injuries from the last round were too much for {model.Name}, which wasn't able to resist.";
+                    return response;
+                }
+                else
+                {
+                    response.Message = $"After a devastating counter attack, {model.Name} falls before his enemy.";
+                    return response;
+                }
+            }
+        }
         // Attack 
         private int ChooseAttack(BattleModel attacker)
         {
@@ -394,34 +423,52 @@ namespace RpgFight.Services.ArenaService
             }
             if(response.Message == "The effects: ")
             {
-                response.Message = $"No weapon effects were applied to {receiver.Name}";
+                response.Message = $"No weapon effects were applied to {receiver.Name}. ";
             }
             else{
-                response.Message += $"were applied to {receiver.Name}";
+                response.Message += $"were applied to {receiver.Name}. ";
             }
             return response;
         }
         private VoidServiceResponse ApplySkillActive(BattleModel attacker, BattleModel receiver)
         {
             var response = new VoidServiceResponse();
+            var healCheck = false;
             response.Message = "The effects: ";
             var fxs = _fxService.GetSkillFxById(attacker.Skill!.Id).Result;
             foreach(GetEffectDto fx in fxs)
             {
                 if(fx.Duration == 1)
                 {
-                    var data = new BattleModelEffect{BattleModelId = receiver.Id, EffectId = fx.Id};
-                    _context.BattleModelEffects.Add(data);
+                    if(fx.Self)
+                    {
+                        healCheck = true;
+                        var healData = new BattleModelEffect{BattleModelId = attacker.Id, EffectId = fx.Id};
+                        _context.BattleModelEffects.Add(healData);
+                    }
+                    else
+                    {
+                        var data = new BattleModelEffect{BattleModelId = receiver.Id, EffectId = fx.Id};
+                        _context.BattleModelEffects.Add(data);
+                    }
                     _context.SaveChanges();
                     response.Message += $"/{fx.Name}/ ";
                 }
             }
             if(response.Message == "The effects: ")
             {
-                response.Message = $"No weapon effects were applied to {receiver.Name}";
+                response.Message = $"No skill effects were applied to {receiver.Name}. ";
             }
-            else{
-                response.Message += $"were applied to {receiver.Name}";
+            else
+            {
+                if(healCheck)
+                {
+                    response.Message = $"were applied to {attacker.Name}. ";
+                }
+                else
+                {   
+                    response.Message += $"were applied to {receiver.Name}. ";
+                }
             }
             return response;
         }
@@ -446,19 +493,40 @@ namespace RpgFight.Services.ArenaService
             if(HasRiposte(receiver))
             {
                 var riposteDmg = dmg * 10 / 100;
-                attacker.HitPoint -= riposteDmg;
                 receiver.HitPoint -= dmg;
+                attacker.HitPoint -= riposteDmg;
                 response.Message = $"{attacker.Name} has attacked {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
                 response.Message +=  aplyMsg;
+
+                var receiverIsAlive = IsAlive(receiver, 1);
+                var attackerIsAlive = IsAlive(attacker, 3);
+                if(receiverIsAlive.Success == false)
+                {
+                    response.Message += receiverIsAlive.Message;
+                }
+                if(attackerIsAlive.Success == false)
+                {
+                    response.Message += attackerIsAlive.Message;
+                }
                 _context.SaveChanges();
                 return response;
             }
-            receiver.HitPoint -= dmg;
-            response.Message = $"{attacker.Name} has used his weapon to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
-            response.Message +=  aplyMsg;
-            _context.SaveChanges();
-            return response;
+            else
+            {
+                receiver.HitPoint -= dmg;
+                response.Message = $"{attacker.Name} has used his weapon to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
+                response.Message +=  aplyMsg;
+
+                var receiverIsAlive = IsAlive(receiver, 1);
+                if(receiverIsAlive.Success == false)
+                {
+                    response.Message += receiverIsAlive.Message;
+                }
+                _context.SaveChanges();
+                return response;
+            }
         }
+        // tem q editar isso qnd for usar dentro do round.
         public VoidServiceResponse Attack()
         {
             // vai tirar essas vars
@@ -481,6 +549,40 @@ namespace RpgFight.Services.ArenaService
                 var Atkmsg = UseAttack(attacker, receiver, 0).Message;
                 response.Message = Atkmsg;
                 return response;
+            }
+        }
+        // Per round effects
+        private VoidServiceResponse ConsumeActiveEffects(BattleModel model)
+        {
+            var response = new VoidServiceResponse();
+            response.Message = $"{model.Name} received ";
+            var joins = _context.BattleModelEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
+            foreach(BattleModelEffect join in joins)
+            {
+                switch(join.EffectId)
+                {
+                    case 1:
+                        model.HitPoint -= 
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        break;
+                    case 5:
+                        break;
+                    case 6:
+                        break;
+                    case 7:
+                        break;
+                    case 8:
+                        break;
+                    case 10:
+                        break;
+                    case 12:
+                        break;
+                }
             }
         }
         // Fight
@@ -510,6 +612,9 @@ namespace RpgFight.Services.ArenaService
         }
         public async Task<RoundResponse> FightOneRound()
         {
+            var response = new RoundResponse();
+            response.Message = "Round ";
+
             throw new NotImplementedException();
         }
 
