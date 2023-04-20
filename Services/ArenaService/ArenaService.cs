@@ -479,12 +479,12 @@ namespace RpgFight.Services.ArenaService
             string aplyMsg = string.Empty;
             if(type == 1)
             { 
-                dmgRaw = attacker.Weapon!.Damage;
+                dmgRaw = attacker.Weapon!.Damage - receiver.Defense;
                 aplyMsg = ApplyWeaponActive(attacker, receiver).Message;
             }
             if(type == 0)
             {
-                dmgRaw = attacker.Skill!.Damage;
+                dmgRaw = attacker.Skill!.Damage - receiver.Defense;
                 aplyMsg = ApplySkillActive(attacker, receiver).Message;
             }
             var receiverProt =  GetProtection(receiver);
@@ -562,7 +562,7 @@ namespace RpgFight.Services.ArenaService
                 switch(join.EffectId)
                 {
                     case 1:
-                        model.HitPoint -= 
+                        model.HitPoint -= 10;
                         break;
                     case 2:
                         break;
@@ -584,6 +584,7 @@ namespace RpgFight.Services.ArenaService
                         break;
                 }
             }
+            throw new NotImplementedException();
         }
         // Fight
         public async Task<FightResponse> Fight()
