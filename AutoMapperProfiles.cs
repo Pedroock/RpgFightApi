@@ -12,6 +12,9 @@ using RpgFight.Dtos.Effect;
 using RpgFight.Dtos.Enemy;
 using RpgFight.Dtos.Skill;
 using RpgFight.Dtos.Weapon;
+using RpgFight.Models.Joins;
+using RpgFightApi.Models.Joins;
+using RpgFight.Migrations;
 
 namespace RpgFight
 {
@@ -30,6 +33,7 @@ namespace RpgFight
             CreateMap<AddEnemyDto, Enemy>();
             CreateMap<Skill, GetSkillDto>();
             CreateMap<Weapon, GetWeaponDto>();
+            CreateMap<RpgFight.Models.Joins.BattleModelEffect, RpgFightApi.Models.Joins.RebootEffect>();
         }
     }
 }

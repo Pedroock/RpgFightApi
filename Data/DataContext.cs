@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RpgFight.Models;
 using RpgFight.Models.Joins;
+using RpgFightApi.Models.Joins;
 
 namespace RpgFight.Data
 {
@@ -211,27 +212,6 @@ namespace RpgFight.Data
                     Strength = 20, Intelligence = 5, Defense = 5
                 }
             );
-
-
-            /* Seeds
-            modelBuilder.Entity<Effect>().HasData(
-                new Effect {Id = 1, Name = "Flames", Intensity = 10, Self = false, Duration = 3},
-                new Effect {Id = 2, Name = "Ice", Intensity = 10, Self = false, Duration = 3},
-                new Effect {Id = 3, Name = "Sparks", Intensity = 10, Self = false, Duration = 3},
-                new Effect {Id = 4, Name = "Heal I", Intensity = 10, Self = true, Duration = 1},
-                new Effect {Id = 5, Name = "Heal II", Intensity = 20, Self = true, Duration = 1},
-                new Effect {Id = 6, Name = "Heal III", Intensity = 30, Self = true, Duration = 1},
-                new Effect {Id = 7, Name = "Frenzy", Intensity = 15, Self = true, Duration = -1},
-                new Effect {Id = 8, Name = "Lethargy", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 9, Name = "Wisdom", Intensity = 15, Self = true, Duration = -1},
-                new Effect {Id = 10, Name = "Folly", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 11, Name = "Endurance", Intensity = 15, Self = true, Duration = -1},
-                new Effect {Id = 12, Name = "Weakness", Intensity = -15, Self = false, Duration = 5},
-                new Effect {Id = 13, Name = "Riposite", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 14, Name = "Protection I", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 15, Name = "Protection II", Intensity = 20, Self = true, Duration = -1},
-                new Effect {Id = 16, Name = "Protection III", Intensity = 30, Self = true, Duration = -1}
-            */
         }
         public DbSet<Armor> Armors => Set<Armor>();
         public DbSet<BattleModel> BattleModels => Set<BattleModel>();
@@ -245,6 +225,7 @@ namespace RpgFight.Data
         // Joins
         public DbSet<ArmorEffect> ArmorEffects => Set<ArmorEffect>();
         public DbSet<BattleModelEffect> BattleModelEffects => Set<BattleModelEffect>();
+        public DbSet<RebootEffect> RebootEffects => Set<RebootEffect>();
         public DbSet<SkillEffect> SkillEffects => Set<SkillEffect>();
         public DbSet<WeaponEffect> WeaponEffects => Set<WeaponEffect>();
     }

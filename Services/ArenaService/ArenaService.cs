@@ -13,6 +13,7 @@ using RpgFight.Services.HttpContextService;
 using AutoMapper;
 using RpgFight.Dtos.Effect;
 using RpgFight.Models.Joins;
+using RpgFightApi.Models.Joins;
 
 namespace RpgFight.Services.ArenaService
 {
@@ -305,7 +306,7 @@ namespace RpgFight.Services.ArenaService
                 }
             }
         }
-        public async Task<VoidServiceResponse> ApplyPassives()
+        public VoidServiceResponse ApplyPassives()
         {
             var response = new VoidServiceResponse();
             var battleEnemy = _context.BattleModels
@@ -321,7 +322,7 @@ namespace RpgFight.Services.ArenaService
             ApplyWeaponPassive(battleEnemy!);
             ApplyArmorPassive(battleChar!);
             ApplyArmorPassive(battleEnemy!);
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
             response.Message = "The passive changes have been applied";
             return response;
         }
@@ -551,44 +552,121 @@ namespace RpgFight.Services.ArenaService
                 return response;
             }
         }
-        // Per round effects
-        private VoidServiceResponse ConsumeActiveEffects(BattleModel model)
+        // parateste
+        public VoidServiceResponse Attack(BattleModel attacker, BattleModel receiver)
         {
             var response = new VoidServiceResponse();
-            response.Message = $"{model.Name} received ";
-            var joins = _context.BattleModelEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
-            foreach(BattleModelEffect join in joins)
+            if(ChooseAttack(attacker!) == 1)
             {
-                switch(join.EffectId)
-                {
-                    case 1:
-                        model.HitPoint -= 
-                        break;
-                    case 2:
-                        break;
-                    case 3:
-                        break;
-                    case 4:
-                        break;
-                    case 5:
-                        break;
-                    case 6:
-                        break;
-                    case 7:
-                        break;
-                    case 8:
-                        break;
-                    case 10:
-                        break;
-                    case 12:
-                        break;
-                }
+                var Atkmsg = UseAttack(attacker, receiver, 1).Message;
+                response.Message = Atkmsg;
+                return response;
+            }
+            else
+            {
+                var Atkmsg = UseAttack(attacker, receiver, 0).Message;
+                response.Message = Atkmsg;
+                return response;
             }
         }
+        // Per round effects
+        private VoidServiceResponse ConsumeActiveEffects(BattleModel model)
+            {
+                var response = new VoidServiceResponse();
+                response.Message = $"{model.Name} received ";
+                response.Message = $"{model.Name} received: ";
+                var joins = _context.BattleModelEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
+                if(joins.Count == 0)
+                {
+                    response.Message = $"{model.Name} suffered from no effects. ";
+                    return response;
+                }
+                foreach(BattleModelEffect join in joins)
+                {
+                    switch(join.EffectId)
+                    {
+                        case 1:
+                            model.HitPoint -= 10;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of burning damage. ";
+                            break;
+                        case 2:
+                            model.HitPoint -= 10;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of freezing damage. ";
+                            break;
+                        case 3:
+                            model.HitPoint -= 10;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of eletric damage. ";
+                            break;
+                        case 4:
+                            model.HitPoint += 10;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of healing. ";
+                            break;
+                        case 5:
+                            model.HitPoint += 20;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "20 points of healing. ";
+                            break;
+                        case 6:
+                            model.HitPoint += 30;
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "30 points of healing. ";
+                            break;
+                        case 8:
+                            model.Strength -= 10;
+                            _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of eletric damage. ";
+                            break;
+                        case 10:
+                            model.Intelligence -= 10;
+                            _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of eletric damage. ";
+                            break;
+                        case 12:
+                            model.Defense -= 10;
+                            _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
+                            _context.BattleModelEffects.Remove(join);
+                            response.Message += "10 points of eletric damage. ";
+                            break;
+                    }
+                }
+                // Restore stats
+                var restoreJoins = _context.RebootEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
+                if(restoreJoins.Count == 0)
+                {
+                    _context.SaveChanges();
+                    return response;
+                }
+                foreach(RebootEffect join in restoreJoins)
+                {
+                    switch(join.EffectId)
+                    {
+                        case 8:
+                            model.Strength += 10;
+                            _context.RebootEffects.Remove(join);
+                            break;
+                        case 10:
+                            model.Intelligence += 10;
+                            _context.RebootEffects.Remove(join);
+                            break;
+                        case 12:
+                            model.Defense += 10;
+                            _context.RebootEffects.Remove(join);
+                            break;
+                    }
+                }
+                _context.SaveChanges();
+                return response;
+            }
         // Fight
-        public async Task<FightResponse> Fight()
+        public async Task<FightResponse<List<RoundResponse>>> Fight()
         {
-            var response = new FightResponse();
+            var response = new FightResponse<List<RoundResponse>>();
             var gearResponse = CheckGear().Result;
             if(gearResponse.Success == false)
             {
@@ -604,18 +682,40 @@ namespace RpgFight.Services.ArenaService
                 return response;
             }
             var applyPassivesResponse = ApplyPassives();
-
-            // fight rounds
-
-
-            throw new NotImplementedException();
+            var enemy = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor).FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == false);
+            var character = _context.BattleModels
+                .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
+                .FirstOrDefault
+                (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
+            // Rounds
+            var count = 0;
+            var rounds = new List<RoundResponse>();
+            while(enemy.HitPoint > 0 & character.HitPoint >0)
+            {
+                count ++;
+                var round = FightOneRound(character, enemy);
+                round.Message += $"{count}";
+                rounds.Add(round);
+            }
+            response.Rounds = rounds;
+            return response;
         }
-        public async Task<RoundResponse> FightOneRound()
+        public RoundResponse FightOneRound(BattleModel character, BattleModel enemy)
         {
             var response = new RoundResponse();
             response.Message = "Round ";
-
-            throw new NotImplementedException();
+            var charConsume = ConsumeActiveEffects(character);
+            var enemyConsume = ConsumeActiveEffects(enemy);
+            response.Effects = charConsume.Message + enemyConsume.Message;
+            var characterAtk = Attack(character, enemy);
+            var enemyATk = Attack(enemy, character);
+            response.CharacterAction = characterAtk.Message;
+            response.CharacterHP = character.HitPoint;
+            response.EnemyAction = enemyATk.Message;
+            response.EnemyHP = enemy.HitPoint;
+            return response;
         }
 
     }
