@@ -14,6 +14,7 @@ using AutoMapper;
 using RpgFight.Dtos.Effect;
 using RpgFight.Models.Joins;
 using RpgFightApi.Models.Joins;
+using RpgFightApi.Models;
 
 namespace RpgFight.Services.ArenaService
 {
@@ -477,16 +478,19 @@ namespace RpgFight.Services.ArenaService
         {
             var response = new VoidServiceResponse();
             int dmgRaw = 0;
+            string weaponName = string.Empty;
             string aplyMsg = string.Empty;
             if(type == 1)
             { 
                 dmgRaw = attacker.Weapon!.Damage;
                 aplyMsg = ApplyWeaponActive(attacker, receiver).Message;
+                weaponName = attacker.Weapon.Name;
             }
             if(type == 0)
             {
                 dmgRaw = attacker.Skill!.Damage;
                 aplyMsg = ApplySkillActive(attacker, receiver).Message;
+                weaponName = attacker.Skill.Name;
             }
             var receiverProt =  GetProtection(receiver);
             var dmg = dmgRaw * (100 - receiverProt) / 100;
@@ -496,7 +500,7 @@ namespace RpgFight.Services.ArenaService
                 var riposteDmg = dmg * 10 / 100;
                 receiver.HitPoint -= dmg;
                 attacker.HitPoint -= riposteDmg;
-                response.Message = $"{attacker.Name} has attacked {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
+                response.Message = $"{attacker.Name} used {weaponName} to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked and {riposteDmg} came back to the attacker. ";
                 response.Message +=  aplyMsg;
 
                 var receiverIsAlive = IsAlive(receiver, 1);
@@ -515,7 +519,7 @@ namespace RpgFight.Services.ArenaService
             else
             {
                 receiver.HitPoint -= dmg;
-                response.Message = $"{attacker.Name} has used his weapon to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
+                response.Message = $"{attacker.Name} used {weaponName} to attack {receiver.Name}, dealing {dmgRaw} points of damage of which {blockedDmg} were blocked. ";
                 response.Message +=  aplyMsg;
 
                 var receiverIsAlive = IsAlive(receiver, 1);
@@ -574,7 +578,6 @@ namespace RpgFight.Services.ArenaService
             {
                 var response = new VoidServiceResponse();
                 response.Message = $"{model.Name} received ";
-                response.Message = $"{model.Name} received: ";
                 var joins = _context.BattleModelEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
                 if(joins.Count == 0)
                 {
@@ -588,53 +591,54 @@ namespace RpgFight.Services.ArenaService
                         case 1:
                             model.HitPoint -= 10;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of burning damage. ";
+                            response.Message += "10 points of burning damage, ";
                             break;
                         case 2:
                             model.HitPoint -= 10;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of freezing damage. ";
+                            response.Message += "10 points of freezing damage, ";
                             break;
                         case 3:
                             model.HitPoint -= 10;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of eletric damage. ";
+                            response.Message += "10 points of eletric damage, ";
                             break;
                         case 4:
                             model.HitPoint += 10;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of healing. ";
+                            response.Message += "10 points of healing, ";
                             break;
                         case 5:
                             model.HitPoint += 20;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "20 points of healing. ";
+                            response.Message += "20 points of healing, ";
                             break;
                         case 6:
                             model.HitPoint += 30;
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "30 points of healing. ";
+                            response.Message += "30 points of healing, ";
                             break;
                         case 8:
                             model.Strength -= 10;
                             _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of eletric damage. ";
+                            response.Message += "10 points of eletric damage, ";
                             break;
                         case 10:
                             model.Intelligence -= 10;
                             _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of eletric damage. ";
+                            response.Message += "10 points of eletric damage, ";
                             break;
                         case 12:
                             model.Defense -= 10;
                             _context.RebootEffects.Add(_mapper.Map<RebootEffect>(join));
                             _context.BattleModelEffects.Remove(join);
-                            response.Message += "10 points of eletric damage. ";
+                            response.Message += "10 points of eletric damage, ";
                             break;
                     }
                 }
+                response.Message = response.Message.Remove(response.Message.Length - 2, 2) + ". ";
                 // Restore stats
                 var restoreJoins = _context.RebootEffects.Where(bme => bme.BattleModelId == model.Id).ToList();
                 if(restoreJoins.Count == 0)
@@ -689,6 +693,7 @@ namespace RpgFight.Services.ArenaService
                 .Include(c => c.Class).Include(c => c.Weapon).Include(c => c.Skill).Include(c => c.Armor)
                 .FirstOrDefault
                 (be => be.UserId == _httpContextService.GetCurrentUserId() & be.IsChar == true);
+            response.Intro = $"Welcome to the arena! Today were going to see the clash of {character.Name} and {enemy.Name}, this is promissing. Now let the games begin!";
             // Rounds
             var count = 0;
             var rounds = new List<RoundResponse>();
