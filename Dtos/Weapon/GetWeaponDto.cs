@@ -9,9 +9,9 @@ namespace RpgFight.Dtos.Weapon
 {
     public class GetWeaponDto
     {
+        public int Id { get; set; }
         public string Name {get;set;} = string.Empty;
         public int Damage {get;set;}
-        public int Price {get;set;}
         public List<GetEffectDto>? Effects { get; set; }
     }
 }

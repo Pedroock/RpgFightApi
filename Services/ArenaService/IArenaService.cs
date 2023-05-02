@@ -8,10 +8,6 @@ namespace RpgFight.Services.ArenaService
 {
     public interface IArenaService
     {
-        Task<VoidServiceResponse> SetUpBattle();
-        VoidServiceResponse ApplyPassives();
-        // VoidServiceResponse Attack(BattleModel attacker, BattleModel reciever);
-        VoidServiceResponse Attack();
-        Task<FightResponse<List<RoundResponse>>> Fight();
+                Task<FightResponse<List<RoundResponse>>> Fight();
     }
 }

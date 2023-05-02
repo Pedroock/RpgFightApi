@@ -9,8 +9,8 @@ namespace RpgFight.Dtos.Armor
 {
     public class GetArmorDto
     {
+        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int Price {get;set;}
         public List<GetEffectDto>? Effects { get; set; }
     }
 }
