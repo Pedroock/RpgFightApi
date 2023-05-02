@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace RpgFightApi.Models.Joins
+namespace RpgFight.Models.Joins
 {
     public class RebootEffect
     {

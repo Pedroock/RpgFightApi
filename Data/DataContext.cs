@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using RpgFight.Models;
 using RpgFight.Models.Joins;
-using RpgFightApi.Models.Joins;
+using RpgFight.Models.Joins;
 
 namespace RpgFight.Data
 {
@@ -63,22 +63,86 @@ namespace RpgFight.Data
 
             // Seeds
             modelBuilder.Entity<Effect>().HasData(
-                new Effect {Id = 1, Name = "Flames", Intensity = 10, Self = false, Duration = 1},
-                new Effect {Id = 2, Name = "Ice", Intensity = 10, Self = false, Duration = 1},
-                new Effect {Id = 3, Name = "Sparks", Intensity = 10, Self = false, Duration = 1},
-                new Effect {Id = 4, Name = "Heal I", Intensity = 10, Self = true, Duration = 1},
-                new Effect {Id = 5, Name = "Heal II", Intensity = 20, Self = true, Duration = 1},
-                new Effect {Id = 6, Name = "Heal III", Intensity = 30, Self = true, Duration = 1},
-                new Effect {Id = 7, Name = "Frenzy", Intensity = 5, Self = true, Duration = -1},
-                new Effect {Id = 8, Name = "Lethargy", Intensity = -5, Self = false, Duration = 1},
-                new Effect {Id = 9, Name = "Wisdom", Intensity = 5, Self = true, Duration = -1},
-                new Effect {Id = 10, Name = "Folly", Intensity = -5, Self = false, Duration = 1},
-                new Effect {Id = 11, Name = "Endurance", Intensity = 5, Self = true, Duration = -1},
-                new Effect {Id = 12, Name = "Weakness", Intensity = -5, Self = false, Duration = 1},
-                new Effect {Id = 13, Name = "Riposite", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 14, Name = "Protection I", Intensity = 10, Self = true, Duration = -1},
-                new Effect {Id = 15, Name = "Protection II", Intensity = 20, Self = true, Duration = -1},
-                new Effect {Id = 16, Name = "Protection III", Intensity = 30, Self = true, Duration = -1}
+                new Effect 
+                    {
+                        Id = 1, Name = "Flames", Intensity = 10, Self = false, Duration = 1,
+                        Description = "Removes hitpoints by burning your enemy"
+                    },
+                new Effect 
+                    {
+                        Id = 2, Name = "Ice", Intensity = 10, Self = false, Duration = 1,
+                        Description = "Removes hitpoints by freezing your enemy"
+                    },
+                new Effect 
+                    {
+                        Id = 3, Name = "Sparks", Intensity = 10, Self = false, Duration = 1,
+                        Description = "Removes hitpoints by shocking your enemy"
+                    },
+                new Effect 
+                    {
+                        Id = 4, Name = "Heal I", Intensity = 10, Self = true, Duration = 1,
+                        Description = "Restores hitpoints"
+                    },
+                new Effect 
+                    {
+                        Id = 5, Name = "Heal II", Intensity = 20, Self = true, Duration = 1,
+                        Description = "Restores hitpoints"
+                    },
+                new Effect 
+                    {
+                        Id = 6, Name = "Heal III", Intensity = 30, Self = true, Duration = 1,
+                        Description = "Restores hitpoints"
+                    },
+                new Effect 
+                    {
+                        Id = 7, Name = "Frenzy", Intensity = 5, Self = true, Duration = -1,
+                        Description = "Gives a strength buff"
+                    },
+                new Effect 
+                    {
+                        Id = 8, Name = "Lethargy", Intensity = -5, Self = false, Duration = 1,
+                        Description = "Gives a strength debuff"
+                    },
+                new Effect 
+                    {
+                        Id = 9, Name = "Wisdom", Intensity = 5, Self = true, Duration = -1,
+                        Description = "Gives a intelligence buff"
+                    },
+                new Effect 
+                    {
+                        Id = 10, Name = "Folly", Intensity = -5, Self = false, Duration = 1,
+                        Description = "Gives a deintelligence buff"
+                    },
+                new Effect 
+                    {
+                        Id = 11, Name = "Endurance", Intensity = 5, Self = true, Duration = -1,
+                        Description = "Gives a defense buff"
+                    },
+                new Effect 
+                    {
+                        Id = 12, Name = "Weakness", Intensity = -5, Self = false, Duration = 1,
+                        Description = "Gives a defense debuff"
+                    },
+                new Effect 
+                    {
+                        Id = 13, Name = "Riposite", Intensity = 10, Self = true, Duration = -1,
+                        Description = "Mirrors some of the damage recieved"
+                    },
+                new Effect 
+                    {
+                        Id = 14, Name = "Protection I", Intensity = 10, Self = true, Duration = -1,
+                        Description = "Eats away some damage"
+                    },
+                new Effect 
+                    {
+                        Id = 15, Name = "Protection II", Intensity = 20, Self = true, Duration = -1,
+                        Description = "Eats away some damage"
+                    },
+                new Effect 
+                    {
+                        Id = 16, Name = "Protection III", Intensity = 30, Self = true, Duration = -1,
+                        Description = "Eats away some damage"
+                    }
             );
 
             modelBuilder.Entity<Class>().HasData(

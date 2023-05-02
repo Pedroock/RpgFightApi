@@ -13,6 +13,7 @@ namespace RpgFight.Models
         public int Intensity { get; set; }
         public bool Self { get; set; }
         public int Duration { get; set; }
+        public string Description { get; set; }
         public List<ArmorEffect>? ArmorEffects { get; set; }
         public List<BattleModelEffect>? BattleModelEffects { get; set; }
         public List<SkillEffect>? SkillEffects { get; set; }

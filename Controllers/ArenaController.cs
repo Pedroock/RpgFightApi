@@ -24,6 +24,5 @@ namespace RpgFight.Controllers
         {
             return Ok(_arenaService.Fight());
         }
-        
     }
 }

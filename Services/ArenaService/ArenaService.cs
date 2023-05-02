@@ -13,8 +13,8 @@ using RpgFight.Services.HttpContextService;
 using AutoMapper;
 using RpgFight.Dtos.Effect;
 using RpgFight.Models.Joins;
-using RpgFightApi.Models.Joins;
-using RpgFightApi.Models;
+using RpgFight.Models.Joins;
+using RpgFight.Models;
 
 namespace RpgFight.Services.ArenaService
 {
@@ -472,7 +472,7 @@ namespace RpgFight.Services.ArenaService
             }
             else
             {
-                if(healCheck == false)
+                if(healCheck == true)
                 {
                     response.Message = ""; // cleans msg
                 }
@@ -700,6 +700,15 @@ namespace RpgFight.Services.ArenaService
                 round.Message += $"{count}";
                 rounds.Add(round);
             }
+            // Outro
+            if(IsAlive(character, 1).Success)
+            {
+                response.Outro = $"After a decisive blow, {character.Name} assures a victory.";
+            }
+            else
+            {
+                response.Outro = $"After a decisive blow, {enemy.Name} assures a victory.";
+            }
             response.Rounds = rounds;
             return response;
         }
@@ -711,10 +720,13 @@ namespace RpgFight.Services.ArenaService
             var enemyConsume = ConsumeActiveEffects(enemy);
             response.Effects = charConsume.Message + enemyConsume.Message;
             var characterAtk = Attack(character, enemy);
-            var enemyATk = Attack(enemy, character);
+            if(IsAlive(enemy, 1).Success)
+            {
+                VoidServiceResponse enemyATk = Attack(enemy, character);
+                response.EnemyAction = enemyATk.Message;
+            }
             response.CharacterAction = characterAtk.Message;
             response.CharacterHP = character.HitPoint;
-            response.EnemyAction = enemyATk.Message;
             response.EnemyHP = enemy.HitPoint;
             return response;
         }

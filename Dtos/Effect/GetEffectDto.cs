@@ -12,5 +12,6 @@ namespace RpgFight.Dtos.Effect
         public int Intensity { get; set; }
         public bool Self { get; set; }
         public int Duration { get; set; }
+        public string Description { get; set; }
     }
 }
