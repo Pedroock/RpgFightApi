@@ -4,8 +4,8 @@
 - Instalar [.NET 7](https://dotnet.microsoft.com/en-us/download/dotnet/7.0)
 - Instalar [Sql Server Express](https://www.microsoft.com/pt-br/sql-server/sql-server-downloads)
 - Usando **cmd.exe**, 
-- -Usando **cmd.exe**, acesse a pasta da aplicação usadno `cd "pasta\da\aplicação"`, use o comando `dotnet restore` para instalar as dependências e 
-`dotnet watch run` para rodar, será aberta uma aba do navagedor no Swagger, onde você pode testar a aplicação.
+- -Usando **cmd.exe**, acesse a pasta da aplicação usadno `cd "pasta\da\aplicação"`, use o comando `dotnet restore` para instalar as dependências, 
+`dotnet ef database update` e `dotnet watch run` para rodar, será aberta uma aba do navagedor no Swagger, onde você pode testar a aplicação.
 ## Usando a API
 ### Auth
 Na parte de autenticação, você tem que criar um usuário e depois logar usando sua senha, será retornado um Token. Com o token em mãos, clique em [Authorize]
