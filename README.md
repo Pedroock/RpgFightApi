@@ -16,7 +16,7 @@ e insira `bearer {token}`, como mostrado na foto.
 Nessa seção, é possível ver as informações sobre classes, armas, skills, personagens, armaduras e efeitos. 
 ### Wardrobe
 Aqui é onde você pode criar, customizar, edita, deletar e ver seu personagem.
-### Guilda
+### Guild
 Aqui você pode, assim como com seu personagem, criar e editar um inimigo ou pode selecionar algum existente.
 ### Fight
 Por fim, quando você estiver com um personagem e inimigo pronto, você pode criar uma luta entre eles.
